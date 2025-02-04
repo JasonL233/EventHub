@@ -1,0 +1,30 @@
+{
+  "name": "eventhub",
+  "version": "1.0.0",
+  "description": "This project aims to provide a platform for event sharing. The platform allows event organizers to post and promote event information. Besides event organizers, the platform provides users with a convenient way to discover events, connect with like-minded people, and share their feedback.",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon backend/server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JasonL233/EventHub.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/JasonL233/EventHub/issues"
+  },
+  "homepage": "https://github.com/JasonL233/EventHub#readme",
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "mongodb": "^6.13.0",
+    "mongoose": "^8.9.6"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.9"
+  }
+}

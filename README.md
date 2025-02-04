@@ -5,7 +5,5 @@ This project aims to provide a platform for event sharing. The platform allows e
 ## To run development server:
 
 ```bash
-cd eventhub
 npm run dev
-'''
 ```

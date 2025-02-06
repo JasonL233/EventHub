@@ -35,6 +35,7 @@ app.post("/api/users", async (req, res) => {
 
 app.listen(3000, () => {
     connectDB();
+    console.log("HIII");
     console.log("Server started at http://localhost:5000");
 });
 

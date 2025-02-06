@@ -1,18 +1,12 @@
 import mongoose from 'mongoose';
 
-const userSchema = new mongoose.Schema({
-    username:{
-        type: String,
-        required: true
-    },
-    password:{
-        type: String,
-        required: true
+export const connectDB = async () => {
+    try {
+        const conn = await mongoose.connect(process.env.MONGO_URI);
+        console.log(`MongoDB Connected: ${conn.connection.host}`);
     }
-}, {
-    timestamps: true
-});
-
-const User = mongoose.model('User', userSchema);
-
-export default User;
+    catch (error) {
+        console.error(`Error: ${error.message}`);
+        process.exit(1);    // Process code, 1 means exit with failure, 0 means success
+    }
+};

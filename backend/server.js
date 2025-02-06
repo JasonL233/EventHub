@@ -3,9 +3,9 @@ import dotenv from "dotenv";
 import { connectDB } from './config/db.js';
 import User from './models/user.js';
 
-dotenv.config();
+dotenv.config();    // Configurate the .env file
 
-const app = express();
+const app = express();  // Express framework  
 
 app.get("/", (req,res) => {
     res.send("Server is ready");
@@ -33,9 +33,8 @@ app.post("/api/users", async (req, res) => {
     }
 });
 
-app.listen(5000, () => {
+app.listen(3000, () => {
     connectDB();
     console.log("Server started at http://localhost:5000");
 });
 
-//z99z8aQXLFKRZcFX

@@ -23,5 +23,4 @@ app.use("/api/events", eventRoutes);
 app.listen(4000, () => {
     connectDB();
     console.log("MONGO_URI:", process.env.MONGO_URI);
-    console.log("Server started at http://localhost:4000");
 });

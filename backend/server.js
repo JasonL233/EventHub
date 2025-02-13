@@ -10,9 +10,9 @@ dotenv.config();
 
 const app = express();
 
-// app.get("/", (req,res) => {
-//     res.send("Server is ready");
-// });
+app.get("/", (req,res) => {
+    res.send("Server is ready");
+});
 
 app.use(express.json()); // allows us to accept JSON data in the req.body
 
@@ -22,5 +22,6 @@ app.use("/api/events", eventRoutes);
 
 app.listen(4000, () => {
     connectDB();
+    console.log("MONGO_URI:", process.env.MONGO_URI);
     console.log("Server started at http://localhost:4000");
 });

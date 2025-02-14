@@ -48,16 +48,12 @@ export const updateEvent = async(req, res) => {
 
 export const deleteEvent = async (req, res) => {
     const {id} = req.params;
-
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-        return res.status(404).json({sucess: false, message:"Invalid Event Id"});
-    }
-
+    
     try {
         await Event.findByIdAndDelete(id);
         res.status(200).json({success: true, message: "Event deleted"});
     } catch (error) {
         console.error("Error in deleting event:", error.message);
-        res.status(500).json({success: false, message: "Sever Error"});
+        res.status(404).json({success: false, message: "Event not found"});
     }
 };

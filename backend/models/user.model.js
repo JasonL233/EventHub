@@ -8,6 +8,10 @@ const userSchema = new mongoose.Schema({
     password:{
         type: String,
         required: true
+    },
+    isEventOrganizer:{
+        type: Boolean,
+        required: true
     }
 });
 

@@ -3,6 +3,7 @@ import { Box, Button, VStack } from "@chakra-ui/react"
 import { CgProfile } from "react-icons/cg";
 import { BsPlusSquare } from "react-icons/bs";
 import { RiHome6Line } from "react-icons/ri";
+import { CiLogin } from "react-icons/ci";
 import { Link } from "react-router-dom";
 
 // Sidebar Component
@@ -22,6 +23,11 @@ const Sidebar = () => (
       <Link to="/profile">
         <Button variant="ghost" color="white" justifyContent="flex-start">
           <CgProfile /> Profile
+        </Button>
+      </Link>
+      <Link to="/login">
+        <Button variant="ghost" color="white" justifyContent="flex-start">
+          <CiLogin /> Login
         </Button>
       </Link>
     </VStack>

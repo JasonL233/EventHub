@@ -16,7 +16,7 @@ function App() {
       <Routes>
         {/* Parent Route with Layout */}
         <Route path="/" element={<Layout />}>
-          <Route index element={<HomePage />} /> {/* Nested correctly */}
+          <Route index element={<HomePage />} /> 
           <Route path="create" element={<CreatePage />} />
           <Route path="post" element={<PostPage />} />
           <Route path="profile" element={<ProfilePage />} />

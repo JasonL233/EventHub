@@ -15,7 +15,7 @@ const Sidebar = () => (
           <RiHome6Line /> Discover
         </Button>
       </Link>
-      <Link to="/post">
+      <Link to="/create">
         <Button variant="ghost" color="white" justifyContent="flex-start">
           <BsPlusSquare /> Post
         </Button>

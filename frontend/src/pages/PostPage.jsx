@@ -2,17 +2,19 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from "react-router-dom";
 import { create } from "zustand";
 import {VStack, Text, Container, Heading, Button, Box} from "@chakra-ui/react";
+import {useEventStore} from "../store/event.js";
 
 
 const PostPage = () => {
-  const [event, setEvent] = useState({});
-  const [loading, setLoading] = useState(false);
+  const {fetchEvent, event} = useEventStore();
   const { id } = useParams();
 
   useEffect(() => {
-    setLoading(true);
+    fetchEvent(id);
+  }, [event]);
 
-  })
+  console.log("Event: ", event);
+
   return (
     <Container maxW = 'container.x1' py = {12}>
       <VStack spacing = {8}>

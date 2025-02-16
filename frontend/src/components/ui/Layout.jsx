@@ -2,6 +2,7 @@ import { Box, Container, Flex, Input, Button, VStack } from "@chakra-ui/react";
 import { Link, Outlet } from "react-router-dom";
 import Sidebar from "./Sidebar"
 import Navbar from "./Navbar"
+import LoginPage from "../../pages/LoginPage"
 
 // Layout Component
 const Layout = () => {  // Arrow function that returns a React JSX structure
@@ -20,6 +21,7 @@ const Layout = () => {  // Arrow function that returns a React JSX structure
         <Outlet />  
       </Container>
     </Flex>
+    <LoginPage />
    </Flex> 
   )
 };

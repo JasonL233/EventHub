@@ -13,19 +13,23 @@ export const getUsers = async (req, res) => {
 
 export const createUsers = async (req, res) => {
     const user = req.body; // user will send this data
-    console.log("from server: " , user);
 
     if (!user.username) {
         return res.status(400).json({success:false, message: "Please provide username"});
     } else if (!user.password) {
         return res.status(400).json({success:false, message: "Please provide password"});
     }
+    const existUser = await User.findOne(user)
+    if (existUser)
+    {
+        return res.status(400).json({success: false, message: "user already exists, please login instead"});
+    }
 
     const newUser = new User(user);
 
     try {
         await newUser.save();
-        res.status(201).json({ success: true, data: newUser});
+        res.status(201).json({ success: true, data: newUser, message: "Account create successfully!"});
     } catch (error) {
         console.error(`Error in Create User: ${error.message}`);
         res.status(500).json({ success: false, message: "Server Error" });
@@ -61,13 +65,17 @@ export const deleteUsers = async (req, res) => {
 
 export const userLogin = async (req, res) => {
     const {username, password, isEventOrganizer} = req.body;
-    console.log("from server: " + username + password + isEventOrganizer);
+    if (!username) {
+        return res.status(400).json({success:false, message: "Please provide username"});
+    } else if (!password) {
+        return res.status(400).json({success:false, message: "Please provide password"});
+    }
+
     try {
         const user = await User.findOne({username});
-
         if (!user) // can't find this username
         {
-            return res.status(400).json({success: false, message: "user doesn't not exist, please create an account first"});
+            return res.status(400).json({success: false, message: "User does not exist, please create an account first"});
         }
         if (user.password !== password)
         {
@@ -75,9 +83,10 @@ export const userLogin = async (req, res) => {
         }
         if (user.isEventOrganizer !== isEventOrganizer)
         {
-            return res.status(400).json({success: false, message: "Wrong role, please try again or create an new account"});
+            return res.status(400).json({success: false, message: "Wrong role, please try again"});
         }
-        res.status(200).json({success: true, message: user});
+
+        res.status(200).json({success: true, message: "Login successfully!"});      
     }
     catch (error)
     {

@@ -65,6 +65,7 @@ export const deleteUsers = async (req, res) => {
 
 export const userLogin = async (req, res) => {
     const {username, password, isEventOrganizer} = req.body;
+    
     if (!username) {
         return res.status(400).json({success:false, message: "Please provide username"});
     } else if (!password) {

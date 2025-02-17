@@ -21,6 +21,7 @@ const Layout = () => {  // Arrow function that returns a React JSX structure
         <Outlet />  
       </Container>
     </Flex>
+    
     <LoginPage />
    </Flex> 
   )

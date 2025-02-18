@@ -87,7 +87,11 @@ export const userLogin = async (req, res) => {
             return res.status(400).json({success: false, message: "Wrong role, please try again"});
         }
 
-        res.status(200).json({success: true, message: "Login successfully!"});      
+        res.status(200).json({
+            success: true, 
+            message: "Login successfully!",
+            user: user
+        });      
     }
     catch (error)
     {

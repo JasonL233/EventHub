@@ -118,7 +118,7 @@ export const likeEvent = async (req, res) => {
   try {
     const updatedEvent = await Event.findByIdAndUpdate(
       id,
-      {likes},
+      {likes: likes},
       { new: true, runValidators: true }
     );
 

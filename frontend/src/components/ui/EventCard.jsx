@@ -5,7 +5,7 @@ import { useEventStore } from '../../store/event';
 
 const EventCard = ({event}) => {
   const {updateLikes} = useEventStore();
-  const [likes, setLikes] = useState(0); 
+  const [likes, setLikes] = useState(event.likes); 
   const [liked, setLiked] = useState(false);
 
   const handleLike = (isLiked) => {

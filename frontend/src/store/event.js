@@ -1,36 +1,42 @@
 import { create } from "zustand";
+import { persist } from "zustand/middleware";
 
-export const useEventStore = create((set) => ({
-  events: [],
+export const useEventStore = create(
+  persist (
+    (set) => ({
 
-  // Update events state
-  setEvents: (events) => set({ events }),
+      events: [],
 
-  // GET single event data
-  fetchEvent: async (id) => {
-    const respond = await fetch(`/api/events/${id}`);
-    const data = await respond.json();
-    set({ events: data });
-  },
+      // Update events state
+      setEvents: (events) => set({ events }),
 
-  // GET all events data
-  fetchEvents: async () => {
-    const res = await fetch("/api/events");
-    const data = await res.json();
-    set({ events: data.data});
-  },
+      // GET single event data
+      fetchEvent: async (id) => {
+        const respond = await fetch(`/api/events/${id}`);
+        const data = await respond.json();
+        set({ events: data });
+      },
 
-  updateLikes: async (id, newLikes) => {
-    const res = await fetch(`/api/events/${id}/like`, {
-        method: "PATCH",
-        headers: {"Content-Type": "application/json",},
-        body: JSON.stringify({likes: newLikes}),
-          
-    });
+      // GET all events data
+      fetchEvents: async () => {
+        const res = await fetch("/api/events");
+        const data = await res.json();
+        set({ events: data.data});
+      },
 
-    set(state => ({
-        events: state.events.map((evn) => 
-            evn._id === id ? {...evn, likes: newLikes} : evn),
-    }));
-  }
-}));
+      updateLikes: async (id, newLikes) => {
+        const res = await fetch(`/api/events/${id}/like`, {
+            method: "PATCH",
+            headers: {"Content-Type": "application/json",},
+            body: JSON.stringify({likes: newLikes}),
+              
+        });
+
+        set(state => ({
+            events: state.events.map((evn) => 
+                evn._id === id ? {...evn, likes: newLikes} : evn),
+        }));
+      }
+    })
+  )
+);

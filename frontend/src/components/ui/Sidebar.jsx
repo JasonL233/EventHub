@@ -7,11 +7,22 @@ import { CiLogin } from "react-icons/ci";
 import { Link } from "react-router-dom";
 import { useDialogStore } from '../../store/dialog';
 import { useUserStore } from '../../store/user';
+import { Toaster, toaster } from "./toaster"
 
 // Sidebar Component
 const Sidebar = () => {
   const openLogin = useDialogStore((state) => state.openLogin);
   const currUser = useUserStore((state) => state.curr_user);
+  const {isLoggedIn, userLogOut} = useUserStore();
+
+  const handleLogout = () => {
+    toaster.create({
+        title: "Logout Successfully",
+        type: "success",
+    })
+    userLogOut();
+    console.log("user logged out");
+  }
 
   return (
     <Box bg="gray.800" color="white" p={4}>
@@ -34,8 +45,8 @@ const Sidebar = () => {
           </Button>
         </Link>
         )} 
-        <Button variant="ghost" color="white" justifyContent="flex-start" onClick={openLogin}>
-          <CiLogin /> Login
+        <Button variant="ghost" color="white" justifyContent="flex-start" onClick={isLoggedIn ? handleLogout : openLogin}>
+          <CiLogin/>{isLoggedIn ? "Logout" : "Login"}
         </Button>
       </VStack>
     </Box>

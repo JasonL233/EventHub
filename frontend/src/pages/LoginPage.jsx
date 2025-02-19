@@ -1,5 +1,5 @@
 import React from 'react'
-import { useState } from 'react'
+import { useState , useEffect} from 'react'
 import { useUserStore } from '../store/user';
 import { Button, Input, Stack, Field, Heading} from "@chakra-ui/react";
 import {PasswordInput } from "../components/ui/password-input";
@@ -19,9 +19,8 @@ const LoginPage = () => {
     const [newUser, setNewUser] = useState(false); // switch between login and sign up
 
     const {createUser} = useUserStore();
-    const {userLogin} = useUserStore();
-    const { isLoginOpen, openChange, openLogin } = useDialogStore();
-
+    const {userLogin, userLogOut, isLoggedIn, curr_user} = useUserStore();
+    const { isLoginOpen, openChange, openLogin, closeLogin} = useDialogStore();
     const handleSubmit = async (e) =>
     {
         e.preventDefault(); // prevent react to re-render
@@ -48,14 +47,17 @@ const LoginPage = () => {
             })
             if (success)
             {
-                openChange(); // close dialog if login successfully
+                closeLogin(); // close dialog if login successfully
             }
         }  
     }
 
+    if (isLoggedIn) {
+        return null;
+    }
+
     return (
     <>
-        <Toaster />
         <DialogRoot placement="center" open={isLoginOpen} onOpenChange={openChange}>
             <DialogContent>
                 <DialogHeader>
@@ -77,24 +79,26 @@ const LoginPage = () => {
                                 onChange={(e) => setUser({...user, password: e.target.value})}
                             />
                         </Field.Root>
-                        <Checkbox 
-                            checked={user.isEventOrganizer} 
-                            onCheckedChange={()=>setUser({
-                                ...user, 
-                                isEventOrganizer: !(user.isEventOrganizer)})}
-                        >
-                        I am an event organizer
-                        </Checkbox>
                         <Checkbox
                             checked={newUser}
                             onCheckedChange={() => setNewUser(!newUser)}
                         >
                         Create a new account
                         </Checkbox>
+                        <Checkbox 
+                        disabled={!newUser}
+                        checked={user.isEventOrganizer} 
+                        onCheckedChange={()=>setUser({
+                            ...user, 
+                            isEventOrganizer: !(user.isEventOrganizer)})}
+                        >
+                        Create an event organizer account
+                        </Checkbox> 
                     </Stack>
                 </DialogBody>
                 <DialogFooter>
-                    <DialogCloseTrigger asChild onClick={openChange} />
+                    <DialogCloseTrigger asChild />
+                    <Button onClick={closeLogin} variant="outline">Cancel</Button>
                     <Button onClick={handleSubmit} variant="solid"> {newUser ? "Sign Up" : "Login"} </Button>
                 </DialogFooter>
             </DialogContent>

@@ -19,7 +19,7 @@ export const createUsers = async (req, res) => {
     } else if (!user.password) {
         return res.status(400).json({success:false, message: "Please provide password"});
     }
-    const existUser = await User.findOne(user)
+    const existUser = await User.findOne({username: user.username});
     if (existUser)
     {
         return res.status(400).json({success: false, message: "user already exists, please login instead"});
@@ -81,10 +81,6 @@ export const userLogin = async (req, res) => {
         if (user.password !== password)
         {
             return res.status(400).json({success: false, message: "Wrong password, please try again"});
-        }
-        if (user.isEventOrganizer !== isEventOrganizer)
-        {
-            return res.status(400).json({success: false, message: "Wrong role, please try again"});
         }
 
         res.status(200).json({

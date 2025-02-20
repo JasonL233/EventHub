@@ -5,5 +5,5 @@ export const useDialogStore = create(
     isLoginOpen: false,
     openChange: () => set((state)=> ({isLoginOpen: !(state.isLoginOpen)})),
     openLogin: () => set((state)=> ({isLoginOpen: true}))
-  })
-);
+    closeLogin: () => set(() => ({isLoginOpen: false}))
+  }));

@@ -15,12 +15,19 @@ export const useEventStore = create(
       set({ events: data });
     },
 
-    // GET all events data
-    fetchEvents: async () => {
-      const res = await fetch("/api/events");
-      const data = await res.json();
-      set({ events: data.data });
-    },
+      // GET all events data
+      fetchEvents: async () => {
+        const res = await fetch("/api/events");
+        const data = await res.json();
+        set({ events: data.data});
+      },
+
+      // Get events that match title
+      fetchEventsByTitle: async (title) => {
+        const respond = await fetch(`/api/search/events/${title}`);
+        const data = await respond.json();
+        set({events: data.data})
+      },
 
     updateLikes: async (event_id, user_id, isLiked, newLikes) => {
       const res = await fetch(`/api/events/${event_id}/like`, {

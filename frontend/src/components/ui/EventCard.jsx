@@ -5,6 +5,7 @@ import { useEventStore } from '../../store/event';
 import { useDialogStore } from '../../store/dialog';
 
 const EventCard = ({event, user}) => {
+  console.log(user);
   const {updateLikes} = useEventStore();
   const openLogin = useDialogStore((state) => state.openLogin);
 
@@ -13,12 +14,12 @@ const EventCard = ({event, user}) => {
 
   // Recalculate the user & event.likedBy when use changes
   useEffect(() => {
-    const likedByCurrUser = user ? event.likedBy.some(id => id.toString() === user._id.toString()) : false;   // true if curr_user is inside likedBy array
-    setLiked(likedByCurrUser);
+    if (user && event.likedBy){
+      setLiked(event.likedBy.includes(user._id));
+    }
   }, [user, event.likedBy]);
 
   const handleLike = (isLiked) => {
-    
     if (user)   // If logged in, update liking feature accordingly. Else, direct to login page
     {      
       setLiked(isLiked);
@@ -30,7 +31,6 @@ const EventCard = ({event, user}) => {
     }
     else
       openLogin();
-
   }
 
   return (
@@ -43,7 +43,7 @@ const EventCard = ({event, user}) => {
             </Heading>
 
             <HStack spacing={2}>
-                <LikeButton initialLiked={liked} onLike={handleLike}/>
+                <LikeButton initialLiked={liked} user={user} onLike={handleLike}/>
                 <span>{likes}</span>
             </HStack>
         </Box>

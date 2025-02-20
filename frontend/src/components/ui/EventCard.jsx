@@ -1,20 +1,36 @@
-import React, { useState} from 'react'
+import React, { useState, useEffect } from 'react'
 import { Box, Heading, HStack, Image} from '@chakra-ui/react';
 import LikeButton from './LikeButton';
 import { useEventStore } from '../../store/event';
+import { useDialogStore } from '../../store/dialog';
 
-const EventCard = ({event}) => {
+const EventCard = ({event, user}) => {
   const {updateLikes} = useEventStore();
-  const [likes, setLikes] = useState(event.likes); 
+  const openLogin = useDialogStore((state) => state.openLogin);
+
+  const [likes, setLikes] = useState(event.likes);
   const [liked, setLiked] = useState(false);
 
+  // Recalculate the user & event.likedBy when use changes
+  useEffect(() => {
+    const likedByCurrUser = user ? event.likedBy.some(id => id.toString() === user._id.toString()) : false;   // true if curr_user is inside likedBy array
+    setLiked(likedByCurrUser);
+  }, [user, event.likedBy]);
+
   const handleLike = (isLiked) => {
-    setLiked(isLiked);
-    setLikes(currLikes => {
-        const newLikes = isLiked ? currLikes + 1 : currLikes - 1;
-        updateLikes(event._id, newLikes);
-        return newLikes;
-    });
+    
+    if (user)   // If logged in, update liking feature accordingly. Else, direct to login page
+    {      
+      setLiked(isLiked);
+      setLikes(currLikes => {
+          const newLikes = isLiked ? currLikes + 1 : currLikes - 1;
+          updateLikes(event._id, user._id, isLiked, newLikes);
+          return newLikes;
+      });
+    }
+    else
+      openLogin();
+
   }
 
   return (

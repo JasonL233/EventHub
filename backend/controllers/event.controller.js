@@ -108,7 +108,7 @@ export const deleteEvent = async (req, res) => {
 
 export const likeEvent = async (req, res) => {
   const { id } = req.params;
-  const { likes } = req.body;
+  const { user_id, action, likes } = req.body;
 
   if (!mongoose.Types.ObjectId.isValid(id))
     return res
@@ -116,9 +116,19 @@ export const likeEvent = async (req, res) => {
       .json({ success: false, message: "Invalid event ID" });
 
   try {
+
+    let update = {likes: likes};
+
+    if (action === "like")
+      update.$addToSet = {likedBy: user_id};
+    else if (action === "unlike")
+      update.$pull = {likedBy: user_id};
+    else
+      return res.status(400).json({ success: false, message: "Invalid action" });
+
     const updatedEvent = await Event.findByIdAndUpdate(
       id,
-      {likes: likes},
+      update,
       { new: true, runValidators: true }
     );
 
@@ -133,3 +143,4 @@ export const likeEvent = async (req, res) => {
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
+

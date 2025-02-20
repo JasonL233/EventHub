@@ -19,7 +19,7 @@ export const createUsers = async (req, res) => {
     } else if (!user.password) {
         return res.status(400).json({success:false, message: "Please provide password"});
     }
-    const existUser = await User.findOne(user)
+    const existUser = await User.findOne({username: user.username});
     if (existUser)
     {
         return res.status(400).json({success: false, message: "user already exists, please login instead"});
@@ -29,7 +29,7 @@ export const createUsers = async (req, res) => {
 
     try {
         await newUser.save();
-        res.status(201).json({ success: true, data: newUser, message: "Account create successfully!"});
+        res.status(200).json({ success: true, data: newUser, message: "Account create successfully!"});
     } catch (error) {
         console.error(`Error in Create User: ${error.message}`);
         res.status(500).json({ success: false, message: "Server Error" });
@@ -81,10 +81,6 @@ export const userLogin = async (req, res) => {
         if (user.password !== password)
         {
             return res.status(400).json({success: false, message: "Wrong password, please try again"});
-        }
-        if (user.isEventOrganizer !== isEventOrganizer)
-        {
-            return res.status(400).json({success: false, message: "Wrong role, please try again"});
         }
 
         res.status(200).json({

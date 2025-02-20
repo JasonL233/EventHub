@@ -24,6 +24,13 @@ export const useEventStore = create(
         set({ events: data.data});
       },
 
+      // Get events that match title
+      fetchEventsByTitle: async (title) => {
+        const respond = await fetch(`/api/search/events/${title}`);
+        const data = await respond.json();
+        set({events: data.data})
+      },
+
       updateLikes: async (id, newLikes) => {
         const res = await fetch(`/api/events/${id}/like`, {
             method: "PATCH",

@@ -13,6 +13,10 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     required: true,
   },
+  likedPosts: {
+    type: [{type: mongoose.Schema.Types.ObjectId}],
+    default: [],
+  },
 });
 
 const User = mongoose.model("User", userSchema);

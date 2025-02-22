@@ -5,7 +5,6 @@ import HomePage from './pages/HomePage'
 import CreatePage from './pages/CreatePage'
 import PostPage from './pages/PostPage'
 import ProfilePage from './pages/ProfilePage'
-import LoginPage from './pages/LoginPage'
 
 import Layout from './components/ui/Layout'
 
@@ -16,11 +15,10 @@ function App() {
       <Routes>
         {/* Parent Route with Layout */}
         <Route path="/" element={<Layout />}>
-          <Route index element={<HomePage />} /> {/* Nested correctly */}
+          <Route index element={<HomePage />} /> 
           <Route path="create" element={<CreatePage />} />
           <Route path="post" element={<PostPage />} />
           <Route path="profile" element={<ProfilePage />} />
-          <Route path="login" element={<LoginPage /> } />
         </Route>
       </Routes>
     </Box>

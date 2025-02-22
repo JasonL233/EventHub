@@ -2,10 +2,14 @@ import { Box, Container, Flex, Input, Button, VStack } from "@chakra-ui/react";
 import { Link, Outlet } from "react-router-dom";
 import Sidebar from "./Sidebar"
 import Navbar from "./Navbar"
+import LoginPage from "../../pages/LoginPage"
+import {Toaster, toaster} from "./toaster"
 
 // Layout Component
 const Layout = () => {  // Arrow function that returns a React JSX structure
   return (
+    <>
+    <Toaster />
    <Flex direction="column" height="100vh" p={3}>
     <Container maxW="100%" height="18%" bg="green.800" color="white">
       <Navbar />
@@ -16,11 +20,14 @@ const Layout = () => {  // Arrow function that returns a React JSX structure
         <Sidebar />
       </Container>
 
-      <Container maxW="83%" bg="blue.800" mt={2} overflowY="auto">  
+      <Container maxW="83%" bg="blue.800" mt={2} overflowY="auto" color="white">  
         <Outlet />  
       </Container>
     </Flex>
+    
+    <LoginPage />
    </Flex> 
+   </>
   )
 };
 

@@ -7,7 +7,6 @@ export const getEvents = async (req, res) => {
     const events = await Event.find({});
     res.status(200).json({ success: true, data: events });
   } catch (error) {
-    console.log("ERROR IS HEREEE");
     console.log("error in fetching events:", error.message);
     res.status(500).json({ success: false, message: "Sever Error" });
   }
@@ -116,21 +115,19 @@ export const likeEvent = async (req, res) => {
       .json({ success: false, message: "Invalid event ID" });
 
   try {
+    let update = { likes: likes };
 
-    let update = {likes: likes};
-
-    if (action === "like")
-      update.$addToSet = {likedBy: user_id};
-    else if (action === "unlike")
-      update.$pull = {likedBy: user_id};
+    if (action === "like") update.$addToSet = { likedBy: user_id };
+    else if (action === "unlike") update.$pull = { likedBy: user_id };
     else
-      return res.status(400).json({ success: false, message: "Invalid action" });
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid action" });
 
-    const updatedEvent = await Event.findByIdAndUpdate(
-      id,
-      update,
-      { new: true, runValidators: true }
-    );
+    const updatedEvent = await Event.findByIdAndUpdate(id, update, {
+      new: true,
+      runValidators: true,
+    });
 
     if (!updateEvent)
       return res
@@ -143,4 +140,3 @@ export const likeEvent = async (req, res) => {
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
-

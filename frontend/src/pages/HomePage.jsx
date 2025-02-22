@@ -27,16 +27,6 @@ const HomePage = () => {
           ))}
         </SimpleGrid>
         
-        {events.length === 0 && (
-          <Text fontSize='x1' fontWeight={"bold"} textAlign={"Center"} color='black'>
-            <Link to={"/create"}>
-              <Text as='span' color='white' _hover={{textDecoration: "underline"}}>
-                Create an event
-              </Text>
-            </Link>
-         </Text>
-        )}
-        
       </VStack>
     </Container>
   )

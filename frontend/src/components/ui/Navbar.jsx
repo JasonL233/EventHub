@@ -40,7 +40,7 @@ const Navbar = () => {
     <Flex align="center" justify="center">
       <HStack h="150px" w="1000px" align="center" justify="center" >
         <NativeSelect.Root w="150px" variant="filled">
-            <NativeSelect.Field placeholder="Select search by" color="black" onChange={(e) => setSearchType(e.currentTarget.value)}>
+            <NativeSelect.Field color="black" onChange={(e) => setSearchType(e.currentTarget.value)}>
               <option value="Event Title">Event Title</option>
               <option value="Event Tag">Event Tag</option>
               <option value="Username">Username</option>

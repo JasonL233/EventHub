@@ -3,10 +3,12 @@ import { Box, Heading, HStack, Image} from '@chakra-ui/react';
 import LikeButton from './LikeButton';
 import { useEventStore } from '../../store/event';
 import { useDialogStore } from '../../store/dialog';
+import { useUserStore } from '../../store/user';
 
 const EventCard = ({event, user}) => {
   console.log(user);
   const {updateLikes} = useEventStore();
+  const {updateLikedPost} = useUserStore();
   const openLogin = useDialogStore((state) => state.openLogin);
 
   const [likes, setLikes] = useState(event.likes);
@@ -25,7 +27,8 @@ const EventCard = ({event, user}) => {
       setLiked(isLiked);
       setLikes(currLikes => {
           const newLikes = isLiked ? currLikes + 1 : currLikes - 1;
-          updateLikes(event._id, user._id, isLiked, newLikes);
+          updateLikes(event._id, user._id, isLiked, newLikes);  // For events: Store users that liked this post
+          updateLikedPost(user._id, event._id, isLiked); // For users: Store events that the user liked
           return newLikes;
       });
     }

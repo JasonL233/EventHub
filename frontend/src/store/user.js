@@ -59,6 +59,26 @@ export const useUserStore = create(
       set({curr_user: null, isLoggedIn: false});
     },
 
+    updateLikedPost: async (user_id, event_id, isLiked) => {
+      const res = await fetch(`/api/users/${user_id}/likedPosts`, {
+        method: "PATCH",
+        headers:  {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          action: isLiked ? "liked" : "unliked",
+          event_id,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (data.success)
+      {
+
+      }
+    }
+
   }))
 
 );

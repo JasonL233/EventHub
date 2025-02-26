@@ -22,7 +22,7 @@ const Navbar = () => {
 
     switch (searchType) {
       case "Event Title" : 
-        fetchEventsByTitle(searchText);
+        fetchEventsByTitle(searchText, searchType);
         break;
       case "Event Tag" :
         /* todo */

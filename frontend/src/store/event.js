@@ -28,16 +28,24 @@ export const useEventStore = create((set) => ({
   },
 
   createEvent: async (newEvent) => {
-    if (!newEvent.title?.trim() || !newEvent.image?.trim() || !newEvent.description?.trim() || !newEvent.publisherId) {
-      return { success: false, message: "Please provide title, description, image, and publisherId" };
+    if (
+      !newEvent.title?.trim() ||
+      !newEvent.image?.trim() ||
+      !newEvent.description?.trim() ||
+      !newEvent.publisherId
+    ) {
+      return {
+        success: false,
+        message: "Please provide title, description, image, and publisherId",
+      };
     }
-  
+
     const res = await fetch("/api/events", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(newEvent),
     });
-  
+
     const data = await res.json();
     set((state) => ({ events: [...state.events, data.data] }));
     return { success: true, message: "Event created successfully" };

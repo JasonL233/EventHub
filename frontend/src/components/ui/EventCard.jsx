@@ -37,8 +37,8 @@ const EventCard = ({event, user}) => {
   }
 
   return (
-    <Box shadow='lg' rounded='lg' overflow='hidden' transition='all 0.3s' _hover={{ transform: "translateY(-5px)", shadow: "x1"}} m={5}>
-        <Image src={event.image} alt={event.title} h={48} w='full' objectFit='cover' />
+    <Box shadow='lg' rounded='lg' overflow='hidden' transition='all 0.3s' _hover={{ transform: "translateY(-5px)", shadow: "x1"}} m={5} maxW="400px" w="full">
+        <Image src={event.image} alt={event.title} width="100%" height="auto" objectFit='cover' />
 
         <Box p={4}>
             <Heading as='h3' size='md' mb={2}>
@@ -51,6 +51,8 @@ const EventCard = ({event, user}) => {
             </HStack>
         </Box>
     </Box>
+
+
   )
 }
 

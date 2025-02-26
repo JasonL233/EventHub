@@ -1,5 +1,4 @@
-import { Container, VStack, Text, SimpleGrid} from '@chakra-ui/react';
-import { Link } from 'react-router-dom';
+import Masonry, {ResponsiveMasonry} from "react-responsive-masonry"
 import React, { useEffect } from 'react';
 // Components
 import EventCard  from '../components/ui/EventCard';
@@ -18,17 +17,18 @@ const HomePage = () => {
   console.log("Events: ", events);
 
   return (
-    <Container>
-      <VStack spacing={8}>
 
-        <SimpleGrid columns={{base: 2, md: 3, lg: 4}} spacing={10} w={"full"}>
-          {events.map((event) => (
-            <EventCard key={event._id} event={event} user={currUser}/>
-          ))}
-        </SimpleGrid>
-        
-      </VStack>
-    </Container>
+        <ResponsiveMasonry
+          columnsCountBreakPoints={{ 400: 1, 500: 2, 1000: 3, 1400: 4, 1800: 5 }}
+
+        >
+          <Masonry > 
+            {events.map((event) => (
+                <EventCard key={event._id} event={event} user={currUser} />
+            ))}
+          </Masonry>
+        </ResponsiveMasonry>
+
   )
 }
 

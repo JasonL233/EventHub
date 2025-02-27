@@ -11,7 +11,7 @@ const Layout = () => {  // Arrow function that returns a React JSX structure
     <>
     <Toaster />
    <Flex direction="column" height="100vh" p={3}>
-    <Container maxW="100%" height="18%" bg="green.800" color="white">
+    <Container maxW="100%" height="12%" color="white">
       <Navbar />
     </Container>
     
@@ -20,7 +20,7 @@ const Layout = () => {  // Arrow function that returns a React JSX structure
         <Sidebar />
       </Container>
 
-      <Container maxW="83%" bg="blue.800" mt={2} p={0} overflowY="auto" color="white">  
+      <Container maxW="83%" mt={2} p={0} overflowY="auto" color="white">  
         <Outlet />  
       </Container>
     </Flex>

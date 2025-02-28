@@ -9,10 +9,7 @@ export const getSearchEventByTitle = async (req, res) => {
     const events = await Event.find({
         title: {$exists: true, $ne: null, $regex: searchTitle, $options: 'i'}
     });
-
-    if (events.length === 0)
       
-
     res.status(200).json({ success: true, data: events , message: "Search success"});
   } catch (error) {
 

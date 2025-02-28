@@ -22,6 +22,10 @@ const eventSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
+  likedBy: {
+    type: [{type: mongoose.Schema.Types.ObjectId}],
+    default: [],
+  },
   comments: {
     type: [
       {

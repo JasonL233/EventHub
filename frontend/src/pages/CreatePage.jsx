@@ -1,36 +1,66 @@
 import React, { useState } from "react";
 import { Box, Button, Container, Flex, Input, Textarea, VStack, Image, Text } from "@chakra-ui/react";
+import { useEventStore } from "../store/event";
+import { toaster } from "../components/ui/toaster"
+import { useUserStore } from '../store/user';
+import { useNavigate } from "react-router-dom";
 
 const CreatePage = () => {
-  const [title, setTitle] = useState(""); // title
-  const [description, setDescription] = useState(""); // description
-  const [coverImage, setCoverImage] = useState(null); // cover image
+  const currUser = useUserStore((state) => state.curr_user);
+  // State to manage event details: title, description, and cover image
+  const [newEvent, setNewEvent] = useState({
+    title: "",
+    description: "",
+    image: null,
+    publisherId: currUser._id,
+  });
 
-  // prompts user to input an image URL and updates the state
+
+  // Prompt the user to enter an image URL and update the state
   const handleImageUpload = () => {
-    const imageUrl = prompt("Please enter the cover image URL:"); // popup input box
+    const imageUrl = prompt("Please enter the cover image URL:"); // Popup input box
     if (imageUrl) {
-      setCoverImage(imageUrl); // updated cover image
+      setNewEvent(prevState => ({ ...prevState, image: imageUrl })); // Updated cover image
       alert("Cover image updated!");
     }
   };
 
-  // process submissions
-  const handleSubmit = () => {
-    if (!title.trim() || !description.trim() || !coverImage) {
-      alert("Please complete all fields before submitting!");
-      return;
-    }
+  const { createEvent } = useEventStore();
+  const navigate = useNavigate(); // Initialize navigate function
 
-    console.log("Title:", title);
-    console.log("Description:", description);
-    console.log("Cover Image:", coverImage);
-    alert("Submission successful!");
+  // Handle form submission
+  const handleSubmit = async () => {
+    // console.log("Title:", newEvent.title);
+    // console.log("Description:", newEvent.description);
+    // console.log("Cover Image:", newEvent.image);
+    const { success, message } = await createEvent(newEvent);
+    console.log("Submit Result:", success, message);
+    if (!success) {
+      toaster.create({
+        title: "Error",
+        description: message,
+        status: "error",
+        isCloseable: true,
+      });
+    }
+    else {
+      toaster.create({
+        title: "Success",
+        description: message,
+        status: "success",
+        isCloseable: true,
+      });
+    }
+    setNewEvent({ title: "", description: "", image: null });
+
+    setTimeout(() => {
+      navigate("/"); // Redirect to main page after 1 second
+    }, 10);
   };
 
   return (
     <Container maxW="100%" height="100%" bg="white" p={6} boxShadow="lg">
-      {/* Cover Picture*/}
+      {/* Cover Picture */}
       <Box width="30%" mb={4}>
         <Text fontSize="xl" fontWeight="bold" color="black" mb={2}>
           Cover Picture
@@ -45,8 +75,8 @@ const CreatePage = () => {
           cursor="pointer"
           onClick={handleImageUpload} // Click to upload image
         >
-          {coverImage ? (
-            <Image src={coverImage} alt="Cover" width="100%" height="100%" objectFit="cover" borderRadius="md" />
+          {newEvent.image ? (
+            <Image src={newEvent.image} alt="Cover" width="100%" height="100%" objectFit="cover" borderRadius="md" />
           ) : (
             <Box fontSize="2xl" color="gray.500">+</Box>
           )}
@@ -62,8 +92,8 @@ const CreatePage = () => {
         {/* Title Input */}
         <Input
           placeholder="Write your title here!"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
+          value={newEvent.title}
+          onChange={(e) => setNewEvent(prevState => ({ ...prevState, title: e.target.value }))} // Update title in state
           border="1px solid gray"
           color="black"
           width="100%"
@@ -73,8 +103,8 @@ const CreatePage = () => {
         {/* Description Input */}
         <Textarea
           placeholder="Write your description here!"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
+          value={newEvent.description}
+          onChange={(e) => setNewEvent(prevState => ({ ...prevState, description: e.target.value }))} // Update description in state
           border="1px solid gray"
           color="black"
           width="100%"
@@ -86,7 +116,6 @@ const CreatePage = () => {
       <Button
         colorScheme="green"
         onClick={handleSubmit}
-        isDisabled={!title.trim() || !description.trim() || !coverImage}
         mt={4}
       >
         Post

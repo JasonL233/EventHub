@@ -4,6 +4,7 @@ import LikeButton from './LikeButton';
 import { useEventStore } from '../../store/event';
 import { useDialogStore } from '../../store/dialog';
 import { useUserStore } from '../../store/user';
+import EventButton from './EventButton';
 
 const EventCard = ({event, user}) => {
   console.log(user);
@@ -39,8 +40,8 @@ const EventCard = ({event, user}) => {
 
   return (
     <Box rounded='lg' overflow='hidden' transition='all 0.3s' _hover={{ transform: "translateY(-5px)", shadow: "x1"}} m={5} maxW="400px" w="full">
-        <Image src={event.image} alt={event.title} width="100%" height="auto" objectFit='cover' border="black" borderColor="black" borderRadius="2xl" />
-
+        {/*<Image src={event.image} alt={event.title} width="100%" height="auto" objectFit='cover' border="black" borderColor="black" borderRadius="2xl" />*/}
+        <EventButton id = {event._id} imageSrc = {event.image} eventTitle = {event.title}/>
         <Box p={4}>
             <Heading as='h3' size='md' mb={2} color="black">
                 {event.title}
@@ -64,5 +65,6 @@ const findUsername = (users, publisherId) => {
   console.log("USERNAME", user);
   return user ? user.username : "Unknown User";
 };
+
 
 export default EventCard

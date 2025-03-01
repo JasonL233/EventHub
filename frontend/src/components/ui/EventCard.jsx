@@ -40,8 +40,7 @@ const EventCard = ({event, user}) => {
 
   return (
     <Box rounded='lg' overflow='hidden' transition='all 0.3s' _hover={{ transform: "translateY(-5px)", shadow: "x1"}} m={5} maxW="400px" w="full">
-        {/*<Image src={event.image} alt={event.title} width="100%" height="auto" objectFit='cover' border="black" borderColor="black" borderRadius="2xl" />*/}
-        <EventButton id = {event._id} imageSrc = {event.image} eventTitle = {event.title}/>
+        <EventButton id = {event._id} mediaSrc = {event.mediaUrl} eventTitle = {event.title} isImage = {event.eventType === "image"}/>
         <Box p={4}>
             <Heading as='h3' size='md' mb={2} color="black">
                 {event.title}

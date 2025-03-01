@@ -12,17 +12,19 @@ const Navbar = () => {
   const [searchType, setSearchType] = useState('Event Title');
   const {fetchEventsByTitle, fetchEvents} = useEventStore();
 
-  const handleSearch = async () => {
+  const handleSearch = async (query) => {
+    const searchQuery = query || searchText;
 
     // empty search matches all events
-    if (!searchText) {
+    if (!searchQuery) {
       fetchEvents();
       return;
     }
 
     switch (searchType) {
       case "Event Title" : 
-        fetchEventsByTitle(searchText, searchType);
+        fetchEventsByTitle(searchQuery);
+        console.log("searchQuery: ", searchQuery)
         break;
       case "Event Tag" :
         /* todo */
@@ -33,7 +35,13 @@ const Navbar = () => {
       default :
         break;
     }
-      return;
+  }
+
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      handleSearch(e.target.value);
+    }
   }
 
   return (
@@ -47,9 +55,19 @@ const Navbar = () => {
             </NativeSelect.Field>
             <NativeSelect.Indicator />
           </NativeSelect.Root>
-          <Input w="700px" h="50px" variant="filled" bg="gray.100" borderRadius="full" color="white" placeholder="Search" onChange={(e)=> setSearchText(e.target.value)}/>
+          <Input 
+            w="700px" 
+            h="50px" 
+            variant="filled" 
+            bg="gray.100" 
+            borderRadius="full" 
+            color="black" 
+            placeholder="Search" 
+            onChange={(e)=> setSearchText(e.target.value)}
+            onKeyDown={handleKeyDown}
+          />
           <Link to="/">
-            <Button aria-label="Search database" onClick={handleSearch}>
+            <Button aria-label="Search database" onClick={() => {handleSearch()}}>
               <CiSearch />
             </Button>
           </Link>

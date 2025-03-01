@@ -1,15 +1,16 @@
 import { create } from "zustand";
 
 export const useEventStore = create((set) => ({
+  event: [],
   events: [],
   searchType: "Event Title",
   searchText: "",
 
   // GET single event data
-  fetchEvent: async (id) => {
-    const respond = await fetch(`/api/events/${id}`);
+  fetchEvent: async (_id) => {
+    const respond = await fetch(`/api/events/${_id}`);
     const data = await respond.json();
-    set({ events: data });
+    set({ event: data.data });
   },
 
   // GET all events data
@@ -20,7 +21,7 @@ export const useEventStore = create((set) => ({
   },
 
   // Get events that match title
-  fetchEventsByTitle: async (title, type) => {
+  fetchEventsByTitle: async (title) => {
     const respond = await fetch(`/api/search/events/${title}`);
     const data = await respond.json();
     const searchedEvents = data.data
@@ -28,7 +29,7 @@ export const useEventStore = create((set) => ({
       console.log("NO EVENTS")
     }
     set({ events: data.data });
-    set({ searchType: type});
+    //set({ searchType: type});
     set({ searchText: title});
   },
 

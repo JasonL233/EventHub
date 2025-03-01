@@ -9,9 +9,14 @@ const eventSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  image: {
+  mediaUrl: {
     type: String,
     required: true,
+  },
+  eventType: {
+    type: String,
+    enum: ["image", "video"],
+    default: "image",
   },
   publisherId: {
     type: mongoose.Schema.Types.ObjectId,
@@ -52,6 +57,6 @@ const eventSchema = new mongoose.Schema({
   },
 });
 
-const Event = mongoose.model("Event", eventSchema);
+const Event = mongoose.model("Event", eventSchema, "events");
 
 export default Event;

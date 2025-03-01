@@ -21,7 +21,7 @@ export const useEventStore = create((set) => ({
   },
 
   // Get events that match title
-  fetchEventsByTitle: async (title, type) => {
+  fetchEventsByTitle: async (title) => {
     const respond = await fetch(`/api/search/events/${title}`);
     const data = await respond.json();
     const searchedEvents = data.data
@@ -29,7 +29,7 @@ export const useEventStore = create((set) => ({
       console.log("NO EVENTS")
     }
     set({ events: data.data });
-    set({ searchType: type});
+    //set({ searchType: type});
     set({ searchText: title});
   },
 

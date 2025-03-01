@@ -2,21 +2,43 @@ import React, { useState, useEffect } from 'react'
 import {Image} from '@chakra-ui/react';
 import { Link } from "react-router-dom";
 
-const EventButton = ( {id, imageSrc, eventTitle} ) => {
-    const [image, setImage] = useState(imageSrc);
+const EventButton = ( {id, mediaSrc, eventTitle, isImage} ) => {
+    const [image, setImage] = useState(mediaSrc);
     console.log(id);
     useEffect(() => {
-        setImage(imageSrc);
-    }, [imageSrc]);
+        setImage(mediaSrc);
+    }, [mediaSrc]);
 
     const handleClick = () => {
         
     }
 
     return (
-        <Link to = {'/post/'.concat(id)}>
+        <Link to={'/post/'.concat(id)}>
             <button onClick={handleClick}>
-                <Image src={imageSrc} alt={eventTitle} width="100%" height="auto" objectFit='cover' border="black" borderColor="black" borderRadius="2xl" />
+            {isImage ? (
+                <Image 
+                src={mediaSrc} 
+                alt={eventTitle} 
+                width="100%" 
+                height="auto" 
+                objectFit='cover' 
+                border="black" 
+                borderColor="black" 
+                borderRadius="2xl" 
+                transition='all 0.3s' 
+                _hover={{filter: "brightness(80%)",}}
+                />
+            ) : (
+                <video 
+                src={mediaSrc} 
+                alt={eventTitle} 
+                controls
+                width="100%" 
+                height="auto" 
+                style={{ borderRadius: "1rem", objectFit: "cover" }}
+                />
+            )}
             </button>
         </Link>
         

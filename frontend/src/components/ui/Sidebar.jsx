@@ -4,7 +4,7 @@ import { CgProfile } from "react-icons/cg";
 import { BsPlusSquare } from "react-icons/bs";
 import { RiHome6Line } from "react-icons/ri";
 import { CiLogin } from "react-icons/ci";
-import { Link, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useDialogStore } from '../../store/dialog';
 import { useUserStore } from '../../store/user';
 import { Toaster, toaster } from "./toaster"

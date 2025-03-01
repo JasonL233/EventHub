@@ -1,15 +1,16 @@
 import { create } from "zustand";
 
 export const useEventStore = create((set) => ({
+  event: [],
   events: [],
   searchType: "Event Title",
   searchText: "",
 
   // GET single event data
-  fetchEvent: async (id) => {
-    const respond = await fetch(`/api/events/${id}`);
+  fetchEvent: async (_id) => {
+    const respond = await fetch(`/api/events/${_id}`);
     const data = await respond.json();
-    set({ events: data });
+    set({ event: data.data });
   },
 
   // GET all events data

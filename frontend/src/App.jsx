@@ -16,9 +16,9 @@ function App() {
         {/* Parent Route with Layout */}
         <Route path="/" element={<Layout />}>
           <Route index element={<HomePage />} /> 
-          <Route path="create" element={<CreatePage />} />
-          <Route path="post" element={<PostPage />} />
-          <Route path="profile" element={<ProfilePage />} />
+          <Route path="/create" element={<CreatePage />} />
+          <Route path="/post/:id" element={<PostPage />} />
+          <Route path="/profile" element={<ProfilePage />} />
         </Route>
       </Routes>
     </Box>

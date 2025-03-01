@@ -1,29 +1,30 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from "react-router-dom";
 import { create } from "zustand";
-import {VStack, Text, Container, Heading, Button, Box} from "@chakra-ui/react";
+import {VStack, Text, Container, Heading, Button, Box, Image} from "@chakra-ui/react";
 import {useEventStore} from "../store/event.js";
 
 
 const PostPage = () => {
   const {fetchEvent, event} = useEventStore();
   const { id } = useParams();
+  
 
   useEffect(() => {
     fetchEvent(id);
-  }, [event]);
+  }, [fetchEvent]);
 
   console.log("Event: ", event);
+
+  let usersComments = event.comments;
 
   return (
     <Container maxW = 'container.x1' py = {12}>
       <VStack spacing = {8}>
-        <Heading as = {"h1"} size = {"2xl"} textAlign = {"center"} mb = {8}>
-					Title
+        <Heading as = {"h1"} color = {"black"} size = {"2xl"} textAlign = {"center"} mb = {8}>
+          {event.title}
 				</Heading>
-        <Box w = {"full"} bg = {"gray.800"} p = {6} rounded = {"lg"} shadow = {"md"}>
-          Image
-        </Box>
+        <Image src={event.image} width="100%" height="100%" objectFit='cover' border="black" borderColor="black"/>
         <Box w = {"full"} bg = {"gray.800"} p = {6} rounded = {"lg"} shadow = {"md"}>
           <Text
             fontSize = {"30"}
@@ -31,11 +32,7 @@ const PostPage = () => {
             textAlign = {"left"}
             color = {"white"}
           >
-            According to Dally Messenger and Alain de Botton, in most Western countries the values and ideals articulated in both church and civil ceremonies are generally similar. The difference is in what Messenger calls the "supernatural infrastructure" or de Botton the "implausible supernatural element".[2][3]
-
-Most religions claim some extra advantage conferred by the deity, e.g., Roman Catholics believe that through the words of consecration in the mass ceremony, God himself becomes actually present on the altar.
-
-Both religious and civil ceremonies share the powerful psychological, social and cultural influences which all ceremony seeks to attain. The style of music played, words used, other components and the structure vary.
+            {event.description}
           </Text>
         </Box>
         <Box w = {"full"} bg = {"gray.800"} p = {6} rounded = {"lg"} shadow = {"md"}>

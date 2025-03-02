@@ -30,7 +30,26 @@ const PostPage = () => {
         <HStack>
           <AutoLikeButton event = {event}/>
         </HStack>
-        <Image src={event.mediaUrl} width="100%" height="100%" objectFit='cover' border="black" borderColor="black"/>
+        {event.eventType === "video" ? (
+          <video
+            src={event.mediaUrl}
+            autoPlay
+            muted
+            loop
+            controls
+            width="100%"
+            style={{ objectFit: "cover", border: "black", borderColor: "black" }}
+          />
+        ) : (
+          <Image
+            src={event.mediaUrl}
+            width="100%"
+            height="100%"
+            objectFit="cover"
+            border="black"
+            borderColor="black"
+          />
+        )}
         <Box w = {"full"} bg = {"gray.800"} p = {6} rounded = {"lg"} shadow = {"md"}>
           <Text
             fontSize = {"30"}

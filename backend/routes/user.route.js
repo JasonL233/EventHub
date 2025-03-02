@@ -1,5 +1,5 @@
 import express from "express";
-import { getUsers, createUsers, updateUsers, deleteUsers, userLogin, updateLikedPost } from '../controllers/user.controller.js'
+import { updateUserProfile, getUsers, createUsers, updateUsers, deleteUsers, userLogin, updateLikedPost, updateFollowing, updateFollowers } from '../controllers/user.controller.js'
 
 const router = express.Router();
 
@@ -9,5 +9,8 @@ router.patch("/:id", updateUsers);
 router.delete("/:id", deleteUsers);
 router.post("/login", userLogin);
 router.patch("/:id/likedPosts", updateLikedPost);
+router.patch("/:id/following", updateFollowing);
+router.patch("/:id/followers", updateFollowers);
+router.patch("/:id/profile", updateUserProfile);
 
 export default router;

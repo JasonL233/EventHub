@@ -29,7 +29,6 @@ export const useEventStore = create((set) => ({
       console.log("NO EVENTS")
     }
     set({ events: data.data });
-    //set({ searchType: type});
     set({ searchText: title});
   },
 
@@ -83,4 +82,9 @@ export const useEventStore = create((set) => ({
       ),
     }));
   },
+
+  updateSearchType : (type) => {
+    set({ searchType: type});
+  },
+  
 }));

@@ -184,9 +184,7 @@ export const useUserStore = create(
           };
         });
       }
-    },
 
-      }
     },
 
     fetchUsersByUsername: async(username) => {
@@ -200,7 +198,7 @@ export const useUserStore = create(
         console.log(data.data);
       }
       set({ users: data.data });
-    }
+    },
 
   }))
 

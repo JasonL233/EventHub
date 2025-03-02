@@ -1,6 +1,27 @@
 import mongoose from "mongoose";
 import User from "../models/user.model.js";
 
+export const updateUserProfile = async (req, res) => {
+  const { id } = req.params;
+  const { username, profileImage } = req.body;
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(400).json({ success: false, message: "Invalid User ID" });
+  }
+
+  try {
+    const updatedUser = await User.findByIdAndUpdate(id, { username, profileImage }, { new: true });
+
+    if (!updatedUser) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+    res.status(200).json({ success: true, data: updatedUser });
+  } catch (error) {
+    console.error("Error updating user profile:", error.message);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
 export const getUsers = async (req, res) => {
   try {
     const users = await User.find({});
@@ -153,5 +174,77 @@ export const updateLikedPost = async (req, res) => {
   } catch (error) {
     console.error("Error updating likes:", error.message);
     res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
+// Handle user follow/unfollow event organizer
+export const updateFollowing = async (req, res) => {
+  const { id } = req.params;  // Current user's ID
+  const { organizer_id, action } = req.body;   // Target organizer ID
+
+  if(!mongoose.Types.ObjectId.isValid(id) || !mongoose.Types.ObjectId.isValid(organizer_id)){
+    return res.status(400).json({ success: false, message: "Invalid userID"});
+  }
+
+  try{
+    let update = {};
+
+    if(action === "follow"){
+      update.$addToSet = { following: organizer_id };   // Add following
+    }
+    else if(action === "unfollow"){
+      update.$pull = { following: organizer_id };      // Delete following
+    }
+    else{
+      return res.status(400).json({ success: false, message: "No action for storing organizer's ID"});
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(id, update, { new: true});
+
+    if(!updatedUser){
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    res.status(200).json({ success: true, data: updatedUser });
+  }
+  catch(error){
+    console.error("Error updating following:", error.message);
+    res.status(500).json({ success: false, message: "Server error"});
+  }
+};
+
+// Handle event organizer follow/unfollow
+export const updateFollowers = async (req, res) => {
+  const { id } = req.params;  // Target organizer ID
+  const { user_id, action } = req.body;   // Follower ID
+
+  if(!mongoose.Types.ObjectId.isValid(id) || !mongoose.Types.ObjectId.isValid(user_id)){
+    return res.status(400).json({ success: false, message: "Invalid userID"});
+  }
+
+  try{
+    let update = {};
+
+    if(action === "follow"){
+      update.$addToSet = { following: user_id };   // Add follower
+    }
+    else if(action === "unfollow"){
+      update.$pull = { following: user_id };      // Delete follower
+    }
+    else{
+      return res.status(400).json({ success: false, message: "No action for storing user's ID"});
+    }
+
+    const updatedOrganizer = await User.findByIdAndUpdate(id, update, { new: true});
+
+    if(!updatedOrganizer){
+      return res.status(404).json({ success: false, message: "Organizer not found" });
+    }
+
+    res.status(200).json({ success: true, data: updatedOrganizer });
+  }
+  catch(error){
+    console.error("Error updating followers:", error.message);
+    res.status(500).json({ success: false, message: "Server error"});
   }
 };

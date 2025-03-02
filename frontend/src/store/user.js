@@ -77,6 +77,19 @@ export const useUserStore = create(
       {
 
       }
+    },
+
+    fetchUsersByUsername: async(username) => {
+      const respond = await fetch(`/api/search/users/${username}`);
+      const data = await respond.json();
+      const searchUsers = data.data
+      if (searchUsers.length === 0){
+        console.log("NO USER")
+      }
+      else {
+        console.log(data.data);
+      }
+      set({ users: data.data });
     }
 
   }))

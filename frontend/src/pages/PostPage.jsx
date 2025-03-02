@@ -1,20 +1,23 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from "react-router-dom";
 import { create } from "zustand";
-import {VStack, Text, Container, Heading, Button, Box, Image} from "@chakra-ui/react";
+import {VStack, Text, Container, Heading, Button, Box, Image, HStack} from "@chakra-ui/react";
 import {useEventStore} from "../store/event.js";
-
+import AutoLikeButton from '../components/ui/AutoLikeButton.jsx';
+import { useUserStore } from '../store/user.js';
+import { useDialogStore } from '../store/dialog.js';
 
 const PostPage = () => {
   const {fetchEvent, event} = useEventStore();
+  // Get event id
   const { id } = useParams();
-  
+  // Get current user
+  const [curUser, setCurUser] = useState(useUserStore((state) => state.curr_user));
 
+  // fetch event data
   useEffect(() => {
     fetchEvent(id);
-  }, [fetchEvent]);
-
-  console.log("Event: ", event);
+  }, [curUser, fetchEvent]);
 
   let usersComments = event.comments;
 
@@ -24,13 +27,17 @@ const PostPage = () => {
         <Heading as = {"h1"} color = {"black"} size = {"2xl"} textAlign = {"center"} mb = {8}>
           {event.title}
 				</Heading>
-        <Image src={event.image} width="100%" height="100%" objectFit='cover' border="black" borderColor="black"/>
+        <HStack>
+          <AutoLikeButton event = {event}/>
+        </HStack>
+        <Image src={event.mediaUrl} width="100%" height="100%" objectFit='cover' border="black" borderColor="black"/>
         <Box w = {"full"} bg = {"gray.800"} p = {6} rounded = {"lg"} shadow = {"md"}>
           <Text
             fontSize = {"30"}
             bgClip = {"text"}
             textAlign = {"left"}
             color = {"white"}
+            whiteSpace = {"pre-line"}
           >
             {event.description}
           </Text>

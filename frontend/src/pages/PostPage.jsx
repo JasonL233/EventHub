@@ -12,7 +12,7 @@ const PostPage = () => {
   // Get event id
   const { id } = useParams();
   // Get current user
-  const [curUser, setCurUser] = useState(useUserStore((state) => state.curr_user));
+  const curUser = useUserStore((state) => state.curr_user);
 
   // fetch event data
   useEffect(() => {

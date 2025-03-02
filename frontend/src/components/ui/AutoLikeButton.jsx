@@ -9,8 +9,8 @@ const AutoLikeButton = ( {event} ) => {
     const [curEvent, setCurEvent] = useState(event)
     const {updateLikes} = useEventStore();
     const {updateLikedPost} = useUserStore();
-    const openLogin = useDialogStore((state) => state.openLogin) // Login Page
-    const [user, setUser] = useState(useUserStore((state) => state.curr_user)) // Current User
+    const openLogin = useDialogStore((state) => state.openLogin); // Login Page
+    const user = useUserStore((state) => state.curr_user); // Current User
 
     const [likes, setLikes] = useState(curEvent.likes); // Number of likes
     const [liked, setLiked] = useState(false); // If the event liked by user

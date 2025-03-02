@@ -37,14 +37,15 @@ export const getEvent = async (req, res) => {
   }
 };
 
+// Creating events: support for images and videos
 export const createEvent = async (req, res) => {
-  const { title, description, image, publisherId, comments, likes } = req.body;
+  const { title, description, mediaUrl, eventType, publisherId, comments, likes } = req.body;
 
   // Validate required fields
-  if (!title || !description || !image || !publisherId) {
+  if (!title || !description || !mediaUrl || !publisherId) {
     return res.status(400).json({
       success: false,
-      message: "Please provide title, description, image, and publisherId",
+      message: "Please provide title, description, mediaUrl, and publisherId",
     });
   }
 
@@ -59,7 +60,8 @@ export const createEvent = async (req, res) => {
   const newEvent = new Event({
     title,
     description,
-    image,
+    mediaUrl,
+    eventType: eventType || "image", // Default type is image
     publisherId,
     likes: likes || 0,
     comments: comments || [],
@@ -67,7 +69,7 @@ export const createEvent = async (req, res) => {
 
   try {
     await newEvent.save();
-    res.status(201).json({ sucess: true, data: newEvent });
+    res.status(201).json({ success: true, data: newEvent });
   } catch (error) {
     console.error("Error in creating event:", error.message);
     res.status(500).json({ success: false, message: "Sever Error" });

@@ -48,6 +48,7 @@ const LoginPage = () => {
             if (success)
             {
                 closeLogin(); // close dialog if login successfully
+                window.location.reload();
             }
         }  
     }

@@ -27,21 +27,31 @@ const PostPage = () => {
         <Heading as = {"h1"} color = {"black"} size = {"2xl"} textAlign = {"center"} mb = {8}>
           {event.title}
 				</Heading>
+        <AutoLikeButton event = {event}/>
         <HStack>
-          <AutoLikeButton event = {event}/>
+          <Image 
+            src={event.mediaUrl} 
+            width="100%" 
+            rounded={"lg"} 
+            height="100%" 
+            shadow={"md"} 
+            objectFit='cover' 
+            border="black" 
+            borderColor="black"
+          />
         </HStack>
-        <Image src={event.mediaUrl} width="100%" height="100%" objectFit='cover' border="black" borderColor="black"/>
-        <Box w = {"full"} bg = {"gray.800"} p = {6} rounded = {"lg"} shadow = {"md"}>
-          <Text
-            fontSize = {"30"}
-            bgClip = {"text"}
-            textAlign = {"left"}
-            color = {"white"}
-            whiteSpace = {"pre-line"}
-          >
-            {event.description}
-          </Text>
-        </Box>
+        <Text
+          fontSize = {"40"}
+          bgClip = {"text"}
+          textAlign = {"left"}
+          color = {"black"}
+          whiteSpace = {"pre-line"}
+          shadow={"md"}
+          rounded={"lg"}
+          p={3}
+        >
+          {event.description}
+        </Text>
         <Box w = {"full"} bg = {"gray.800"} p = {6} rounded = {"lg"} shadow = {"md"}>
           Comments
         </Box>

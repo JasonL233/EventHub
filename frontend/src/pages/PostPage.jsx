@@ -1,18 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from "react-router-dom";
-import { create } from "zustand";
 import {VStack, Text, Container, Heading, Button, Box, Image, HStack} from "@chakra-ui/react";
 import {useEventStore} from "../store/event.js";
 import AutoLikeButton from '../components/ui/AutoLikeButton.jsx';
 import { useUserStore } from '../store/user.js';
 import { useDialogStore } from '../store/dialog.js';
+import LeaveCommentChart from '../components/ui/LeaveCommentChart.jsx';
 
 const PostPage = () => {
   const {fetchEvent, event} = useEventStore();
   // Get event id
   const { id } = useParams();
   // Get current user
-  const [curUser, setCurUser] = useState(useUserStore((state) => state.curr_user));
+  const curUser = useUserStore((state) => state.curr_user);
 
   // fetch event data
   useEffect(() => {
@@ -27,9 +27,7 @@ const PostPage = () => {
         <Heading as = {"h1"} color = {"black"} size = {"2xl"} textAlign = {"center"} mb = {8}>
           {event.title}
 				</Heading>
-        <HStack>
-          <AutoLikeButton event = {event}/>
-        </HStack>
+        <AutoLikeButton event = {event}/>
         {event.eventType === "video" ? (
           <video
             src={event.mediaUrl}
@@ -61,12 +59,12 @@ const PostPage = () => {
             {event.description}
           </Text>
         </Box>
-        <Box w = {"full"} bg = {"gray.800"} p = {6} rounded = {"lg"} shadow = {"md"}>
-          Comments
+        <Box w = {"full"} bg = {"white"} p = {6} rounded = {"lg"} shadow = {"md"}>
+          <LeaveCommentChart event = {event}/>
         </Box>
       </VStack>
     </Container>
-  )
+  );
 }
 
 export default PostPage

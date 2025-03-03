@@ -9,8 +9,8 @@ const AutoLikeButton = ( {event} ) => {
     const [curEvent, setCurEvent] = useState(event)
     const {updateLikes} = useEventStore();
     const {updateLikedPost} = useUserStore();
-    const openLogin = useDialogStore((state) => state.openLogin) // Login Page
-    const [user, setUser] = useState(useUserStore((state) => state.curr_user)) // Current User
+    const openLogin = useDialogStore((state) => state.openLogin); // Login Page
+    const user = useUserStore((state) => state.curr_user); // Current User
 
     const [likes, setLikes] = useState(curEvent.likes); // Number of likes
     const [liked, setLiked] = useState(false); // If the event liked by user
@@ -51,7 +51,17 @@ const AutoLikeButton = ( {event} ) => {
     return (
         <HStack spacing={2}>
             <Text color="black" fontFamily="sans-serif" fontSize="md">{likes}</Text>
-            <button onClick={handleClick} style={{ border: 'none', background: 'transparent', cursor: 'pointer', fontSize: '24px', transition: 'color 0.3s ease-in-out', color: 'black'}} aria-label="Like button">
+            <button 
+                onClick={handleClick} 
+                style={{ 
+                    border: 'none', 
+                    background: 'transparent', 
+                    cursor: 'pointer', 
+                    fontSize: '24px', 
+                    transition: 'color 0.3s ease-in-out', 
+                    color: 'black'
+                }} 
+                aria-label="Like button">
                 <FaHeart style={{ color: (liked && user) ? 'red' : 'lightgray', transition: 'color 0.3s', }} />          
             </button>
             

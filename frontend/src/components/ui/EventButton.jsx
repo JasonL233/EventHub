@@ -14,7 +14,7 @@ const EventButton = ( {id, mediaSrc, eventTitle, isImage} ) => {
     }
 
     return (
-        <Link to={'/post/'.concat(id)}>
+        <Link to={`/post/${id}`}>
             <button onClick={handleClick}>
             {isImage ? (
                 <Image 

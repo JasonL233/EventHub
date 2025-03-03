@@ -10,7 +10,6 @@ const LeaveCommentChart = ({event}) => {
     const openLogin = useDialogStore((state) => state.openLogin); // login prompt
     const {addComment} = useEventStore(); // upload comment
     // Default Avatar
-    const userPorait = user.profileImage;
     const promptMessage = "Post your comment"; // Message displayed in comment prompt
     const [userComment, setUserComment] = useState(""); // store user's current comment
     const [isPost, setIsPost] = useState(false); // Check if user post comment
@@ -53,7 +52,7 @@ const LeaveCommentChart = ({event}) => {
         <HStack >
             {user && (
                 <Image 
-                    src={userPorait} 
+                    src={user.profileImage} 
                     shadow={"md"} 
                     border="black"
                     borderRadius={"full"} 

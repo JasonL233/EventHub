@@ -78,7 +78,7 @@ const CreatePage = () => {
           <select
             value={newEvent.eventType}
             onChange={(e) => setNewEvent({ ...newEvent, eventType: e.target.value })}
-            style={{ padding: "8px", borderRadius: "4px", border: "1px solid gray" }}
+            style={{ padding: "8px", borderRadius: "4px", border: "1px solid gray", color: "black" }}
           >
             <option value="image">image</option>
             <option value="video">video</option>

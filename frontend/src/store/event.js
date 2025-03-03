@@ -103,9 +103,13 @@ export const useEventStore = create((set) => ({
     set((state) => ({
       events: state.events.map((evn) =>
         evn._id === event_id
-          ? { ...evn, comments:{} }
+          ? { ...evn, comments:data.data.comments }
           : evn
       ),
     }));
+    return { success: true, message: "Adding new comment successfully" };
   },
+
+
+
 }));

@@ -33,8 +33,6 @@ const AutoLikeButton = ( {event} ) => {
                 setIsInitial(true);
             }
         }
-        console.log("#################" + likes);
-        console.log("#################" + liked);
     }, [user, event, curEvent.likedBy]);
 
     // Handle User Clicking Like Icon
@@ -43,7 +41,6 @@ const AutoLikeButton = ( {event} ) => {
         if (user) {
             let isLiked = !liked;
             setLiked(isLiked);
-            console.log(likes);
             setLikes((currLikes => {
                 const newLikes = isLiked ? currLikes + 1 : currLikes - 1;
                 updateLikes(curEvent._id, user._id, isLiked, newLikes); // Update Event Information
@@ -51,7 +48,6 @@ const AutoLikeButton = ( {event} ) => {
                 console.log(newLikes);
                 return newLikes;
             }));
-            console.log(likes);
         }
         // If user doesn't login, then pop login page
         else {

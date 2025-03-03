@@ -180,3 +180,9 @@ export const addComment = async (req, res) => {
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
+
+
+// Reply comment
+export const replyComment = async (req, res) => {
+  
+};

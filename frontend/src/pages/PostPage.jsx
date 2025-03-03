@@ -8,6 +8,7 @@ import { useDialogStore } from '../store/dialog.js';
 import LeaveCommentChart from '../components/ui/LeaveCommentChart.jsx';
 
 const PostPage = () => {
+  const bgColor = "gray.150";
   const {fetchEvent, event} = useEventStore();
   // Get event id
   const { id } = useParams();
@@ -18,8 +19,6 @@ const PostPage = () => {
   useEffect(() => {
     fetchEvent(id);
   }, [curUser, fetchEvent]);
-
-  let usersComments = event.comments;
 
   return (
     <Container maxW = 'container.x1' py = {12}>
@@ -46,21 +45,46 @@ const PostPage = () => {
             objectFit="cover"
             border="black"
             borderColor="black"
+            rounded={"lg"}
           />
         )}
-        <Box w = {"full"} bg = {"gray.800"} p = {6} rounded = {"lg"} shadow = {"md"}>
+        <Box 
+          w = {"full"} 
+          bg = {bgColor} 
+          p = {6} 
+          rounded = {"lg"} 
+          shadow = {"md"}
+          border={"black"}
+        >
           <Text
             fontSize = {"30"}
             bgClip = {"text"}
             textAlign = {"left"}
-            color = {"white"}
+            color = {"black"}
             whiteSpace = {"pre-line"}
           >
             {event.description}
           </Text>
         </Box>
-        <Box w = {"full"} bg = {"white"} p = {6} rounded = {"lg"} shadow = {"md"}>
+        <Box 
+          w = {"full"} 
+          bg = {bgColor} 
+          p = {6} 
+          rounded = {"lg"} 
+          shadow = {"md"}
+          border={"black"}
+        >
           <LeaveCommentChart event = {event}/>
+        </Box>
+        <Box
+          w = {"full"}
+          bg = {bgColor}
+          p = {6}
+          rounded={"lg"}
+          shadow={"md"}
+          border={"black"}
+        >
+          
         </Box>
       </VStack>
     </Container>

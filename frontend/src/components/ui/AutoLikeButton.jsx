@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { HStack, Text } from '@chakra-ui/react';
+import { HStack, Text, Button } from '@chakra-ui/react';
 import { FaHeart } from 'react-icons/fa';
 import { useUserStore } from '../../store/user';
 import { useEventStore } from '../../store/event';
@@ -22,7 +22,6 @@ const AutoLikeButton = ( {event} ) => {
             setCurEvent(event);
             setLikes(curEvent.likes);
         }
-        
         // Update Liked Status of Current User
         if (user && curEvent.likedBy) {
             setLiked(curEvent.likedBy.includes(user._id));
@@ -50,8 +49,7 @@ const AutoLikeButton = ( {event} ) => {
 
     return (
         <HStack spacing={2}>
-            <Text color="black" fontFamily="sans-serif" fontSize="md">{likes}</Text>
-            <button 
+            <Button 
                 onClick={handleClick} 
                 style={{ 
                     border: 'none', 
@@ -61,9 +59,25 @@ const AutoLikeButton = ( {event} ) => {
                     transition: 'color 0.3s ease-in-out', 
                     color: 'black'
                 }} 
-                aria-label="Like button">
-                <FaHeart style={{ color: (liked && user) ? 'red' : 'lightgray', transition: 'color 0.3s', }} />          
-            </button>
+                aria-label="Like button"
+                _hover={{
+                    transition: "0.5s ease-in-out",
+                    transform: "scale(1.5)"
+                }}
+            >
+                <Text 
+                    color="black" 
+                    fontFamily="sans-serif" 
+                    fontSize="md"
+                >
+                    {likes}
+                </Text>
+                <FaHeart 
+                    style={{ 
+                        color: (liked && user) ? 'red' : 'lightgray', 
+                        transition: 'color 0.3s', 
+                }}/>       
+            </Button>
             
         </HStack>
     )

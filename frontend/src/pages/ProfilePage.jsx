@@ -17,7 +17,7 @@ const ProfilePage = () => {
 
   const [isEditing, setIsEditing] = useState(false);
   const [newUsername, setNewUsername] = useState(curr_user?.username || "");
-  const [newProfileImage, setNewProfileImage] = useState(curr_user?.profileImage || "https://cdn.kinocheck.com/i/tw5o2a0n6a.jpg");
+  const [newProfileImage, setNewProfileImage] = useState(curr_user?.profileImage || "https://static1.cbrimages.com/wordpress/wp-content/uploads/2022/05/spy-x-family-anyas-classic-meme-face-heh.jpg?q=50&fit=crop&w=1140&h=&dpr=1.5");
   const { updateUserProfile } = useUserStore();
 
   // Handle update

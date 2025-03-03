@@ -28,30 +28,37 @@ const PostPage = () => {
           {event.title}
 				</Heading>
         <AutoLikeButton event = {event}/>
-        <HStack>
-          <Image 
-            src={event.mediaUrl} 
-            width={"100%"} 
-            rounded={"lg"} 
-            height={"100%"} 
-            shadow={"md"} 
-            objectFit={"cover"} 
-            border={"black"} 
-            borderColor={"black"}
+        {event.eventType === "video" ? (
+          <video
+            src={event.mediaUrl}
+            autoPlay
+            muted
+            loop
+            controls
+            width="100%"
+            style={{ objectFit: "cover", border: "black", borderColor: "black" }}
           />
-        </HStack>
-        <Text
-          fontSize = {"40"}
-          bgClip = {"text"}
-          textAlign = {"left"}
-          color = {"black"}
-          whiteSpace = {"pre-line"}
-          shadow={"md"}
-          rounded={"lg"}
-          p={3}
-        >
-          {event.description}
-        </Text>
+        ) : (
+          <Image
+            src={event.mediaUrl}
+            width="100%"
+            height="100%"
+            objectFit="cover"
+            border="black"
+            borderColor="black"
+          />
+        )}
+        <Box w = {"full"} bg = {"gray.800"} p = {6} rounded = {"lg"} shadow = {"md"}>
+          <Text
+            fontSize = {"30"}
+            bgClip = {"text"}
+            textAlign = {"left"}
+            color = {"white"}
+            whiteSpace = {"pre-line"}
+          >
+            {event.description}
+          </Text>
+        </Box>
         <Box w = {"full"} bg = {"white"} p = {6} rounded = {"lg"} shadow = {"md"}>
           <LeaveCommentChart event = {event}/>
         </Box>

@@ -33,7 +33,9 @@ const EventButton = ( {id, mediaSrc, eventTitle, isImage} ) => {
                 <video 
                 src={mediaSrc} 
                 alt={eventTitle} 
-                controls
+                autoPlay
+                muted
+                loop
                 width="100%" 
                 height="auto" 
                 style={{ borderRadius: "1rem", objectFit: "cover" }}

@@ -36,13 +36,13 @@ export const useEventStore = create((set) => ({
   createEvent: async (newEvent) => {
     if (
       !newEvent.title?.trim() ||
-      !newEvent.image?.trim() ||
+      !newEvent.mediaUrl?.trim() ||
       !newEvent.description?.trim() ||
       !newEvent.publisherId
     ) {
       return {
         success: false,
-        message: "Please provide title, description, image, and publisherId",
+        message: "Please provide title, description, mediaUrl, and publisherId",
       };
     }
 

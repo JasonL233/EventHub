@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from "react-router-dom";
-import { create } from "zustand";
 import {VStack, Text, Container, Heading, Button, Box, Image, HStack} from "@chakra-ui/react";
 import {useEventStore} from "../store/event.js";
 import AutoLikeButton from '../components/ui/AutoLikeButton.jsx';
 import { useUserStore } from '../store/user.js';
 import { useDialogStore } from '../store/dialog.js';
+import LeaveCommentChart from '../components/ui/LeaveCommentChart.jsx';
 
 const PostPage = () => {
   const {fetchEvent, event} = useEventStore();
@@ -31,13 +31,13 @@ const PostPage = () => {
         <HStack>
           <Image 
             src={event.mediaUrl} 
-            width="100%" 
+            width={"100%"} 
             rounded={"lg"} 
-            height="100%" 
+            height={"100%"} 
             shadow={"md"} 
-            objectFit='cover' 
-            border="black" 
-            borderColor="black"
+            objectFit={"cover"} 
+            border={"black"} 
+            borderColor={"black"}
           />
         </HStack>
         <Text
@@ -52,12 +52,12 @@ const PostPage = () => {
         >
           {event.description}
         </Text>
-        <Box w = {"full"} bg = {"gray.800"} p = {6} rounded = {"lg"} shadow = {"md"}>
-          Comments
+        <Box w = {"full"} bg = {"white"} p = {6} rounded = {"lg"} shadow = {"md"}>
+          <LeaveCommentChart event = {event}/>
         </Box>
       </VStack>
     </Container>
-  )
+  );
 }
 
 export default PostPage

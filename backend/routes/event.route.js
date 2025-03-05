@@ -1,5 +1,5 @@
 import express from "express";
-import { createEvent, deleteEvent, getEvent, getEvents, updateEvent, likeEvent, addComment} from "../controllers/event.controller.js";
+import { createEvent, deleteEvent, getEvent, getEvents, updateEvent, likeEvent, addComment, replyComment} from "../controllers/event.controller.js";
 
 // Prefix: /api/events
 
@@ -19,5 +19,6 @@ router.patch("/:id/like", likeEvent);
 
 router.patch("/:id/comment", addComment);
 
+router.patch("/:id/reply", replyComment);
 
 export default router;

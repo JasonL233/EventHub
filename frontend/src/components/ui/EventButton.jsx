@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react'
-import {Image} from '@chakra-ui/react';
+import { Image, Box, Icon } from '@chakra-ui/react';
 import { Link } from "react-router-dom";
+import { FaRegCirclePlay } from "react-icons/fa6";
 
 const EventButton = ( {id, mediaSrc, eventTitle, isImage} ) => {
     const [image, setImage] = useState(mediaSrc);
-    console.log(id);
     useEffect(() => {
         setImage(mediaSrc);
     }, [mediaSrc]);
@@ -30,16 +30,24 @@ const EventButton = ( {id, mediaSrc, eventTitle, isImage} ) => {
                 _hover={{filter: "brightness(80%)",}}
                 />
             ) : (
-                <video 
-                src={mediaSrc} 
-                alt={eventTitle} 
-                autoPlay
-                muted
-                loop
-                width="100%" 
-                height="auto" 
-                style={{ borderRadius: "1rem", objectFit: "cover" }}
-                />
+                <Box position="relative" >
+                    <video 
+                    src={mediaSrc} 
+                    alt={eventTitle} 
+                    width="100%" 
+                    height="auto" 
+                    style={{ borderRadius: "1rem", objectFit: "cover" }}
+                    />
+
+                    {/* Play Icon */}
+                    <Box
+                        position="absolute"
+                        top="5%"    
+                        right="5%"
+                    >
+                        <Icon as={FaRegCirclePlay} boxSize={4} opacity={0.87}/>
+                    </Box>
+                </Box>
             )}
             </button>
         </Link>

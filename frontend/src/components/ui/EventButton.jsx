@@ -14,7 +14,7 @@ const EventButton = ( {id, mediaSrc, eventTitle, isImage} ) => {
     }
 
     return (
-        <Link to={'/post/'.concat(id)}>
+        <Link to={`/post/${id}`}>
             <button onClick={handleClick}>
             {isImage ? (
                 <Image 
@@ -33,7 +33,9 @@ const EventButton = ( {id, mediaSrc, eventTitle, isImage} ) => {
                 <video 
                 src={mediaSrc} 
                 alt={eventTitle} 
-                controls
+                autoPlay
+                muted
+                loop
                 width="100%" 
                 height="auto" 
                 style={{ borderRadius: "1rem", objectFit: "cover" }}

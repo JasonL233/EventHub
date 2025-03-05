@@ -36,13 +36,13 @@ export const useEventStore = create((set) => ({
   createEvent: async (newEvent) => {
     if (
       !newEvent.title?.trim() ||
-      !newEvent.image?.trim() ||
+      !newEvent.mediaUrl?.trim() ||
       !newEvent.description?.trim() ||
       !newEvent.publisherId
     ) {
       return {
         success: false,
-        message: "Please provide title, description, image, and publisherId",
+        message: "Please provide title, description, mediaUrl, and publisherId",
       };
     }
 
@@ -83,4 +83,33 @@ export const useEventStore = create((set) => ({
       ),
     }));
   },
+
+  addComment: async (event_id, user_id, newComment) => {
+    const res = await fetch(`/api/events/${event_id}/comment`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        user_id,
+        comment: newComment,
+      }),
+    });
+
+    if (!res.ok) {
+      console.error("Failed to add comment");
+      return;
+    }
+
+    const data = await res.json();
+    set((state) => ({
+      events: state.events.map((evn) =>
+        evn._id === event_id
+          ? { ...evn, comments:data.data.comments }
+          : evn
+      ),
+    }));
+    return { success: true, message: "Adding new comment successfully" };
+  },
+
+
+
 }));

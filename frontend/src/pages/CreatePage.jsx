@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import { Box, Button, Container, Flex, Input, Textarea, VStack, Image, Text, Heading } from "@chakra-ui/react";
+import { Box, Button, Container, Flex, Input, Textarea, Image, Text, Heading } from "@chakra-ui/react";
 import { useEventStore } from "../store/event";
-import { toaster } from "../components/ui/toaster"
+import { toaster } from "../components/ui/toaster";
 import { useUserStore } from '../store/user';
 import { useNavigate } from "react-router-dom";
 
@@ -11,17 +11,17 @@ const CreatePage = () => {
   const [newEvent, setNewEvent] = useState({
     title: "",
     description: "",
-    image: null,
+    mediaUrl: "",
+    eventType: "image", // Default media type
     publisherId: currUser._id,
   });
 
-
-  // Prompt the user to enter an image URL and update the state
-  const handleImageUpload = () => {
-    const imageUrl = prompt("Please enter the cover image URL:"); // Popup input box
-    if (imageUrl) {
-      setNewEvent(prevState => ({ ...prevState, image: imageUrl })); // Updated cover image
-      alert("Cover image updated!");
+  // Prompt the user to enter URL and update the state
+  const handleMediaUpload = () => {
+    const mediaUrl = prompt("Please enter the media URL:");  // Popup input box
+    if (mediaUrl) {
+      setNewEvent(prevState => ({ ...prevState, mediaUrl }));
+      alert("Media address has been updated!");
     }
   };
 
@@ -31,11 +31,7 @@ const CreatePage = () => {
 
   // Handle form submission
   const handleSubmit = async () => {
-    // console.log("Title:", newEvent.title);
-    // console.log("Description:", newEvent.description);
-    // console.log("Cover Image:", newEvent.image);
     const { success, message } = await createEvent(newEvent);
-    console.log("Submit Result:", success, message);
     if (!success) {
       toaster.create({
         title: "Error",
@@ -45,8 +41,7 @@ const CreatePage = () => {
         isCloseable: true,
       });
       return;
-    }
-    else {
+    } else {
       toaster.create({
         title: "Success",
         description: message,
@@ -55,8 +50,7 @@ const CreatePage = () => {
         isCloseable: true,
       });
     }
-    setNewEvent({ title: "", description: "", image: null });
-
+    setNewEvent({ title: "", description: "", mediaUrl: "", eventType: "image", publisherId: currUser._id });
     setTimeout(() => {
       navigate("/"); // Redirect to main page after 1 second
     }, 10);
@@ -76,10 +70,25 @@ const CreatePage = () => {
           Create New Event
         </Heading>
 
-        {/* Cover Picture */}
+        {/* Media Type Selection */}
         <Box mb={6}>
           <Text fontSize="lg" fontWeight="semibold" color="gray.600" mb={2}>
-            Cover Picture
+            Select Media Type
+          </Text>
+          <select
+            value={newEvent.eventType}
+            onChange={(e) => setNewEvent({ ...newEvent, eventType: e.target.value })}
+            style={{ padding: "8px", borderRadius: "4px", border: "1px solid gray", color: "black" }}
+          >
+            <option value="image">image</option>
+            <option value="video">video</option>
+          </select>
+        </Box>
+
+        {/* Media Preview and Upload */}
+        <Box mb={6}>
+          <Text fontSize="lg" fontWeight="semibold" color="gray.600" mb={2}>
+            Media Preview
           </Text>
           <Flex
             align="center"
@@ -90,12 +99,27 @@ const CreatePage = () => {
             height="180px"
             cursor="pointer"
             _hover={{ borderColor: "gray.600" }}
-            onClick={handleImageUpload} // Click to upload image
+            onClick={handleMediaUpload}
             transition="0.2s"
-            bg="gray.100"  
+            bg="gray.100"
           >
-            {newEvent.image ? (
-              <Image src={newEvent.image} alt="Cover" width="100%" height="100%" objectFit="cover" borderRadius="md" />
+            {newEvent.mediaUrl ? (
+              newEvent.eventType === "video" ? (
+                <video autoPlay muted loop width="100%" height="100%" controls>
+                  <source src={newEvent.mediaUrl} type="video/mp4" />
+                  Your browser does not support video playback.
+                </video>
+
+              ) : (
+                <Image
+                  src={newEvent.mediaUrl}
+                  alt="Media Preview"
+                  width="100%"
+                  height="100%"
+                  objectFit="cover"
+                  borderRadius="md"
+                />
+              )
             ) : (
               <Text fontSize="xl" color="gray.500">+</Text>
             )}

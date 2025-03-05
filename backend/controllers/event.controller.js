@@ -37,14 +37,15 @@ export const getEvent = async (req, res) => {
   }
 };
 
+// Creating events: support for images and videos
 export const createEvent = async (req, res) => {
-  const { title, description, image, publisherId, comments, likes } = req.body;
+  const { title, description, mediaUrl, eventType, publisherId, comments, likes } = req.body;
 
   // Validate required fields
-  if (!title || !description || !image || !publisherId) {
+  if (!title || !description || !mediaUrl || !publisherId) {
     return res.status(400).json({
       success: false,
-      message: "Please provide title, description, image, and publisherId",
+      message: "Please provide title, description, mediaUrl, and publisherId",
     });
   }
 
@@ -59,7 +60,8 @@ export const createEvent = async (req, res) => {
   const newEvent = new Event({
     title,
     description,
-    image,
+    mediaUrl,
+    eventType: eventType || "image", // Default type is image
     publisherId,
     likes: likes || 0,
     comments: comments || [],
@@ -67,7 +69,7 @@ export const createEvent = async (req, res) => {
 
   try {
     await newEvent.save();
-    res.status(201).json({ sucess: true, data: newEvent });
+    res.status(201).json({ success: true, data: newEvent });
   } catch (error) {
     console.error("Error in creating event:", error.message);
     res.status(500).json({ success: false, message: "Sever Error" });
@@ -137,6 +139,44 @@ export const likeEvent = async (req, res) => {
     res.status(200).json({ success: true, data: updatedEvent });
   } catch (error) {
     console.error("Error updating likes:", error.message);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+
+};
+
+
+// Adding comment
+export const addComment = async (req, res) => {
+  const { id } = req.params;
+  const { user_id, comment } = req.body;
+  
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res
+      .status(400)
+      .json({ success: false, message: "Invalid event ID" });
+  } else if(!mongoose.Types.ObjectId.isValid(user_id)) {
+    return res
+      .status(400)
+      .json({ success: false, message: "Invalid user ID"});
+  }
+
+  try {
+    const event = await Event.findById(id);
+
+    const update = { userId: user_id, comment: comment};
+    event.comments.push(update);
+    await event.save();
+
+    const updatedEvent = await Event.findById(id);
+
+    if (!updateEvent) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Event not found" });
+    } 
+    res.status(200).json({ success: true, data: updatedEvent });
+  } catch (error) {
+    console.error("Error Adding Comment:", error.message);
     res.status(500).json({ success: false, message: "Server error" });
   }
 };

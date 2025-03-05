@@ -15,23 +15,17 @@ const AutoLikeButton = ( {event} ) => {
     const [likes, setLikes] = useState(curEvent.likes); // Number of likes
     const [liked, setLiked] = useState(false); // If the event liked by user
 
-    const [isInitial, setIsInitial] = useState(false);
-
     // Update Event, Likes Number, and Liked Status
     useEffect(() => {
-        if (!isInitial) {
-            // Update New Event and Likes
-            if (event) {
-                setCurEvent(event);
-                setLikes(curEvent.likes);
+        if (event) {
+            if (event != curEvent) {
+                setLikes(event.likes);
             }
             // Update Liked Status of Current User
-            if (user && curEvent.likedBy) {
-                setLiked(curEvent.likedBy.includes(user._id));
+            if (user && event.likedBy && event != curEvent) {
+                setLiked(event.likedBy.includes(user._id));
             }
-            if (likes && liked) {
-                setIsInitial(true);
-            }
+            setCurEvent(event);
         }
     }, [user, event, curEvent.likedBy]);
 

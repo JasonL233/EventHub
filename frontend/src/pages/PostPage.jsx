@@ -26,7 +26,7 @@ const PostPage = () => {
         <Heading as = {"h1"} color = {"black"} size = {"2xl"} textAlign = {"center"} mb = {8}>
           {event.title}
 				</Heading>
-        <AutoLikeButton event = {event}/>
+        <AutoLikeButton event = {event} initial={false}/>
         {event.eventType === "video" ? (
           <video
             src={event.mediaUrl}

@@ -37,7 +37,7 @@ export const getEvent = async (req, res) => {
 // Creating events: support for images and videos
 export const createEvent = async (req, res) => {
   try {
-    const { title, description, eventType, publisherId } = req.body;
+    const { title, description, eventType, publisherId, tags } = req.body;
 
     // Validate required fields
     if (!title || !description || !publisherId) {
@@ -58,6 +58,15 @@ export const createEvent = async (req, res) => {
 
     const mediaUrl = `http://localhost:4000/uploads/${req.file.filename}`;
 
+    let parsedTags = [];
+    if (tags) {
+      try {
+        parsedTags = JSON.parse(tags);
+      } catch (err) {
+        parsedTags = [];
+      }
+    }
+
     const newEvent = new Event({
       title,
       description,
@@ -66,6 +75,7 @@ export const createEvent = async (req, res) => {
       publisherId,
       likes: 0,
       comments: [],
+      tags: parsedTags,
     });
 
     await newEvent.save();

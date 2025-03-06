@@ -15,9 +15,12 @@ const CreatePage = () => {
     mediaUrl: "",
     eventType: "image", // Default media type
     publisherId: currUser._id,
+    tags: []
   });
 
-  // Actual selected file
+  // State for tag input
+  const [tagInput, setTagInput] = useState("");
+
   const [selectedFile, setSelectedFile] = useState(null);
   const fileInputRef = useRef(null);
 
@@ -35,14 +38,33 @@ const CreatePage = () => {
     const file = e.target.files[0];
     if (file) {
       setSelectedFile(file);
-      setNewEvent((prev) => ({
-        ...prev,
+      setNewEvent((prevState) => ({
+        ...prevState,
         mediaUrl: URL.createObjectURL(file), // local preview only
       }));
     }
   };
 
   // Submit form: send file + fields via FormData
+  // Add tag when Enter is pressed in the tag input box.
+  const handleTagKeyDown = (e) => {
+    if (e.key === "Enter" && tagInput.trim() !== "") {
+      setNewEvent((prevState) => ({
+        ...prevState,
+        tags: [...prevState.tags, tagInput.trim()]
+      }));
+      setTagInput("");
+    }
+  };
+
+  // Delete tag
+  const removeTag = (indexToRemove) => {
+    setNewEvent((prevState) => ({
+      ...prevState,
+      tags: prevState.tags.filter((_, index) => index !== indexToRemove)
+    }));
+  };
+
   const handleSubmit = async () => {
     if (!selectedFile) {
       alert("Please select a file!");
@@ -60,6 +82,8 @@ const CreatePage = () => {
     formData.append("eventType", newEvent.eventType);
     formData.append("publisherId", newEvent.publisherId);
 
+    formData.append("tags", JSON.stringify(newEvent.tags));
+  
     const { success, message } = await createEvent(formData);
 
     if (!success) {
@@ -88,6 +112,7 @@ const CreatePage = () => {
       eventType: "image",
       publisherId: currUser._id,
       mediaUrl: "",
+      tags: []
     });
     setSelectedFile(null);
 
@@ -211,6 +236,42 @@ const CreatePage = () => {
         </Box>
 
         {/* Post Button */}
+        <Box width="100%" mb={4}>
+          <Text fontSize="lg" fontWeight="semibold" color="gray.600" mb={2}>
+            Tags
+          </Text>
+          <Flex wrap="wrap" mb={2}>
+            {newEvent.tags.map((tag, index) => (
+              <Box
+                key={index}
+                bg="gray.200"
+                color="black"
+                px={3}
+                py={1}
+                mr={2}
+                mb={2}
+                borderRadius="md"
+                display="flex"
+                alignItems="center"
+              >
+                <Text>{tag}</Text>
+                <Button size="xs" ml={2} onClick={() => removeTag(index)}>x</Button>
+              </Box>
+            ))}
+          </Flex>
+          <Input
+            placeholder="Enter a tag and press Enter"
+            value={tagInput}
+            onChange={(e) => setTagInput(e.target.value)}
+            onKeyDown={handleTagKeyDown}
+            border="1px solid gray.300"
+            borderRadius="md"
+            _focus={{ borderColor: "blue.400", boxShadow: "outline" }}
+            color="black"
+            _placeholder={{ color: "gray.500" }}
+          />
+        </Box>
+
         <Button
           colorScheme="blue"
           width="100%"

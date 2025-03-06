@@ -65,6 +65,27 @@ const PostPage = () => {
           >
             {event.description}
           </Text>
+
+          {/* tag display */}
+          {event.tags && event.tags.length > 0 && (
+            <HStack mt={4} spacing={4}>
+              {event.tags.map((tag, index) => (
+                <Box
+                  key={index}
+                  bg="gray.200"
+                  px={3}
+                  py={1}
+                  borderRadius="md"
+                  border="1px solid black"
+                >
+                  <Text color="black" fontSize="sm">
+                    {tag}
+                  </Text>
+                </Box>
+              ))}
+            </HStack>
+          )}
+
         </Box>
         <Box 
           w = {"full"} 

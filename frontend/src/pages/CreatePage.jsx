@@ -139,7 +139,7 @@ const CreatePage = () => {
             height="180px"
             cursor="pointer"
             _hover={{ borderColor: "gray.600" }}
-            onClick={handleMediaUpload}
+            onClick={handleClickUploadArea}
             transition="0.2s"
             bg="gray.100"
           >

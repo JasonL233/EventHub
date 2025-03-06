@@ -1,4 +1,6 @@
 import express from "express";
+import multer from "multer";
+import path from "path";
 import { createEvent, deleteEvent, getEvent, getEvents, updateEvent, likeEvent, addComment, replyComment} from "../controllers/event.controller.js";
 
 // Prefix: /api/events

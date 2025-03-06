@@ -5,12 +5,23 @@ import { createEvent, deleteEvent, getEvent, getEvents, updateEvent, likeEvent, 
 
 const router = express.Router();
 
+// Multer configuration
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "uploads/"); // folder to store uploaded files
+  },
+  filename: (req, file, cb) => {
+    // e.g. "image-1679999999999.jpg"
+    cb(null, file.fieldname + "-" + Date.now() + path.extname(file.originalname));
+  },
+});
+const upload = multer({ storage });
+
+// POST with file upload
+router.post("/", upload.single("image"), createEvent);
+
 router.get("/", getEvents);
-
 router.get("/:id", getEvent);
-
-router.post("/", createEvent);
-
 router.put("/:id", updateEvent);
 
 router.delete("/:id", deleteEvent);

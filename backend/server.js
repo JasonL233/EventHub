@@ -13,17 +13,21 @@ const app = express();
 
 const PORT = process.env.PORT || 5000;
 
-app.get("/", (req, res) => {
-  res.send("Server is ready");
-});
+// Parse JSON
+app.use(express.json());
 
-app.use(express.json()); // allows us to accept JSON data in the req.body
+// Serve static files from "uploads" so that /uploads/xxx.jpg can be accessed
+app.use("/uploads", express.static("uploads"));
 
 app.use("/api/users", userRoutes);
 
 app.use("/api/events", eventRoutes);
 
 app.use("/api/search", searchRoutes);
+
+app.get("/", (req, res) => {
+  res.send("Server is ready");
+});
 
 app.listen(PORT, () => {
   connectDB();

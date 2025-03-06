@@ -24,35 +24,25 @@ export const useEventStore = create((set) => ({
   fetchEventsByTitle: async (title) => {
     const respond = await fetch(`/api/search/events/${title}`);
     const data = await respond.json();
-    const searchedEvents = data.data
-    if (searchedEvents.length === 0){
-      console.log("NO EVENTS")
-    }
     set({ events: data.data });
     //set({ searchType: type});
     set({ searchText: title});
   },
 
-  createEvent: async (newEvent) => {
-    if (
-      !newEvent.title?.trim() ||
-      !newEvent.mediaUrl?.trim() ||
-      !newEvent.description?.trim() ||
-      !newEvent.publisherId
-    ) {
-      return {
-        success: false,
-        message: "Please provide title, description, mediaUrl, and publisherId",
-      };
-    }
-
+  // Create event with FormData
+  createEvent: async (formData) => {
     const res = await fetch("/api/events", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(newEvent),
+      body: formData,
     });
 
     const data = await res.json();
+
+    if (!data.success) {
+      return { success: false, message: data.message };
+    }
+
+    // If success, push new event to store
     set((state) => ({ events: [...state.events, data.data] }));
     return { success: true, message: "Event created successfully" };
   },

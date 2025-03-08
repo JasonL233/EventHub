@@ -4,15 +4,13 @@ import { CiSearch } from "react-icons/ci";
 import { useState , useEffect} from 'react';
 import { Link } from "react-router-dom";
 import { useEventStore } from '../../store/event'
-import { useUserStore } from '../../store/user';
 
 
 const Navbar = () => {
 
   const [searchText, setSearchText] = useState('');
   const [searchType, setSearchType] = useState('Event Title');
-  const {fetchEventsByTitle, fetchEvents, updateSearchType} = useEventStore();
-  const {fetchUsersByUsername} = useUserStore();
+  const {fetchEventsByTitle, fetchEvents, fetchEventsByUsername, fetchEventsByTag} = useEventStore();
 
   const handleSearch = async (query) => {
     const searchQuery = query || searchText;
@@ -26,13 +24,12 @@ const Navbar = () => {
     switch (searchType) {
       case "Event Title" : 
         fetchEventsByTitle(searchQuery);
-        updateSearchType(searchType);
         break;
       case "Event Tag" :
-        /* todo */
+        fetchEventsByTag(searchQuery);
           break;
       case "Username" :
-        fetchUsersByUsername(searchQuery);
+        fetchEventsByUsername(searchQuery);
           break;
       default :
         break;

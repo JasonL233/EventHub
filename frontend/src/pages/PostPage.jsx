@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { createContext, useEffect, useState } from 'react';
 import { useParams } from "react-router-dom";
 import {VStack, Text, Container, Heading, Button, Box, Image, HStack} from "@chakra-ui/react";
 import {useEventStore} from "../store/event.js";
@@ -8,6 +8,7 @@ import { useDialogStore } from '../store/dialog.js';
 import CommentCard from '../components/ui/CommentCard.jsx';
 import LeaveCommentChart from '../components/ui/LeaveCommentChart.jsx';
 
+
 const PostPage = () => {
   const bgColor = "gray.150";
   const {fetchEvent, event} = useEventStore();
@@ -15,6 +16,9 @@ const PostPage = () => {
   const { id } = useParams();
   // Get current user
   const curUser = useUserStore((state) => state.curr_user);
+
+  // Check update comment
+  const [commentState, setCommentState] = useState(false);
 
   // fetch event data
   useEffect(() => {
@@ -58,7 +62,7 @@ const PostPage = () => {
           border={"black"}
         >
           <Text
-            fontSize = {"30"}
+            fontSize = {"md"}
             bgClip = {"text"}
             textAlign = {"left"}
             color = {"black"}
@@ -96,9 +100,9 @@ const PostPage = () => {
           shadow = {"md"}
           border={"black"}
         >
-          <LeaveCommentChart event = {event}/>
+          <LeaveCommentChart event = {event} commentState={commentState} setCommentState={setCommentState}/>
         </Box>
-        <CommentCard event = {event}/>
+        <CommentCard event = {event} commentState={commentState} setCommentState={setCommentState}/>
       </VStack>
     </Container>
   );

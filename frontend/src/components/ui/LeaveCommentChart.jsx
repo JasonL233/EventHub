@@ -1,11 +1,12 @@
-import React, { useState, useRef } from 'react'
+import React, { useState, useRef, useContext } from 'react'
 import { HStack, VStack, Image, Button, Textarea, Spacer } from '@chakra-ui/react';
 import { useUserStore } from '../../store/user';
 import { useEventStore } from '../../store/event';
 import { useDialogStore } from '../../store/dialog';
 import { toaster } from "./toaster";
 
-const LeaveCommentChart = ({event}) => {
+
+const LeaveCommentChart = ({event, commentState, setCommentState}) => {
     const user = useUserStore((state) => state.curr_user); // current user
     const openLogin = useDialogStore((state) => state.openLogin); // login prompt
     const {addComment} = useEventStore(); // upload comment
@@ -13,6 +14,7 @@ const LeaveCommentChart = ({event}) => {
     const promptMessage = "Post your comment"; // Message displayed in comment prompt
     const [userComment, setUserComment] = useState(""); // store user's current comment
     const [isPost, setIsPost] = useState(false); // Check if user post comment
+
 
     const handlePost = async () => {
         // if user login then upload comment
@@ -32,6 +34,7 @@ const LeaveCommentChart = ({event}) => {
                     });
                 } else { // reset input
                     setUserComment("");
+                    setCommentState(!commentState);
                     return;
                 }
             } else { // if empty comment, do nothing

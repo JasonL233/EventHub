@@ -4,6 +4,7 @@ import { replyComment } from "../../../backend/controllers/event.controller";
 export const useEventStore = create((set) => ({
   event: [],
   events: [],
+  comments: [],
   searchType: "Event Title",
   searchText: "",
 
@@ -19,6 +20,13 @@ export const useEventStore = create((set) => ({
     const res = await fetch("/api/events");
     const data = await res.json();
     set({ events: data.data });
+  },
+
+  // GET all comments
+  fetchComments: async (event_id) => {
+    const res = await fetch(`/api/events/${event_id}/comments`);
+    const data = await res.json();
+    set({ comments: data.data });
   },
 
   // Get events that match title

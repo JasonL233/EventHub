@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { replyComment } from "../../../backend/controllers/event.controller";
 
 export const useEventStore = create((set) => ({
   event: [],
@@ -100,6 +101,26 @@ export const useEventStore = create((set) => ({
     return { success: true, message: "Adding new comment successfully" };
   },
 
+  replyComment: async (event_id, user_id, newComment, target) => {
+    const res = await fetch(`/api/events/${event_id}/reply`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        user_id,
+        comment: newComment,
+        reply_to: target
+      }),
+    });
 
+    const data = await res.json();
+    set((state) => ({
+      events: state.events.map((evn) =>
+        evn._id === event_id
+          ? { ...evn, comments:data.data.comments }
+          : evn
+      ),
+    }));
+    return { success: true, message: "Adding new reply successfully" };
+  }
 
 }));

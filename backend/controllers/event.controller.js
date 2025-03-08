@@ -158,7 +158,7 @@ export const addComment = async (req, res) => {
     if (!event) {
       return res.status(404).json({ success: false, message: "Event not found" });
     }
-    event.comments.push({ userId: user_id, comment });
+    event.comments.push({ userId: user_id, comment: comment });
     await event.save();
 
     const updatedEvent = await Event.findById(id);
@@ -172,5 +172,28 @@ export const addComment = async (req, res) => {
 
 // Reply comment
 export const replyComment = async (req, res) => {
-  
+  const { id } = req.params;
+  const { user_id, comment, reply_to } = req.body;
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(400).json({ success: false, message: "Invalid event ID" });
+  }
+  if (!mongoose.Types.ObjectId.isValid(user_id)) {
+    return res.status(400).json({ success: false, message: "Invalid user ID" });
+  }
+
+  try {
+    const event = await Event.findById(id);
+    if (!event) {
+      return res.status(404).json({ success: false, message: "Event not found" });
+    }
+    event.comments.push({ replyTo: reply_to, userId: user_id, comment: comment });
+    await event.save();
+
+    const updatedEvent = await Event.findById(id);
+    res.status(200).json({ success: true, data: updatedEvent });
+  } catch (error) {
+    console.error("Error Replying Comment:", error.message);
+    res.status(500).json({ success: false, message: "Server Error" });
+  }
 };

@@ -201,9 +201,6 @@ export const useUserStore = create(
     },
 
 
-      }
-    },
-
     fetchUsersByUsername: async(username) => {
       const respond = await fetch(`/api/search/users/${username}`);
       const data = await respond.json();

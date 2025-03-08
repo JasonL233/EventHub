@@ -34,6 +34,12 @@ const eventSchema = new mongoose.Schema({
   comments: {
     type: [
       {
+        replyTo: {
+          type: mongoose.Schema.Types.ObjectId,
+          required: false,
+          // If comment post, null. If reply comment, ObjectId of that comment
+          default: null 
+        },
         userId: {
           type: mongoose.Schema.Types.ObjectId,
           ref: "user",
@@ -43,8 +49,16 @@ const eventSchema = new mongoose.Schema({
           type: String,
           required: true,
         },
+        createdAt: {
+          type: Date,
+          default: Date.now,
+        }
       },
     ],
+    default: [],
+  },
+  tags: {
+    type: [String],
     default: [],
   },
   createdAt: {

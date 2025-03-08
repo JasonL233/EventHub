@@ -1,17 +1,24 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { useEventStore } from "./event";
-import { updateUserProfile } from "../../../backend/controllers/user.controller";
+import { getUser, updateUserProfile } from "../../../backend/controllers/user.controller";
 
 export const useUserStore = create(
   persist((set) => ({
     
+    user: [],
     users: [],
     curr_user: null,
     isLoggedIn: false,
 
     setUsers: (users) => set({ users }),
     setCurrentUser: (user) => set({ curr_user: user, isLoggedIn: !!user }),
+
+    getUser: async(user_id) => {
+      const respond = await fetch(`/api/users/${user_id}`);
+      const data = await respond.json();
+      set({ user: data.data });
+    },
 
     updateUserProfile: async(user_id, newUser, newProfile) => {
       const res = await fetch(`/api/users/${user_id}/profile`, {

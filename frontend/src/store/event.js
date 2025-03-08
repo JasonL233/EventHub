@@ -101,6 +101,7 @@ export const useEventStore = create((set) => ({
     return { success: true, message: "Adding new comment successfully" };
   },
 
+  // Reply a comment
   replyComment: async (event_id, user_id, newComment, target) => {
     const res = await fetch(`/api/events/${event_id}/reply`, {
       method: "PATCH",
@@ -121,6 +122,6 @@ export const useEventStore = create((set) => ({
       ),
     }));
     return { success: true, message: "Adding new reply successfully" };
-  }
+  },
 
 }));

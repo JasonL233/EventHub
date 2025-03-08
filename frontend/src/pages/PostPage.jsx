@@ -5,6 +5,7 @@ import {useEventStore} from "../store/event.js";
 import AutoLikeButton from '../components/ui/AutoLikeButton.jsx';
 import { useUserStore } from '../store/user.js';
 import { useDialogStore } from '../store/dialog.js';
+import CommentCard from '../components/ui/CommentCard.jsx';
 import LeaveCommentChart from '../components/ui/LeaveCommentChart.jsx';
 
 const PostPage = () => {
@@ -97,16 +98,7 @@ const PostPage = () => {
         >
           <LeaveCommentChart event = {event}/>
         </Box>
-        <Box
-          w = {"full"}
-          bg = {bgColor}
-          p = {6}
-          rounded={"lg"}
-          shadow={"md"}
-          border={"black"}
-        >
-          
-        </Box>
+        <CommentCard event = {event}/>
       </VStack>
     </Container>
   );

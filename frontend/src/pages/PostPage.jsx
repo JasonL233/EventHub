@@ -7,7 +7,7 @@ import { useUserStore } from '../store/user.js';
 import { useDialogStore } from '../store/dialog.js';
 import CommentCard from '../components/ui/CommentCard.jsx';
 import LeaveCommentChart from '../components/ui/LeaveCommentChart.jsx';
-
+import Reply from '../components/ui/Reply.jsx';
 
 const PostPage = () => {
   const bgColor = "gray.150";
@@ -19,6 +19,7 @@ const PostPage = () => {
 
   // Check update comment
   const [commentState, setCommentState] = useState(false);
+
 
   // fetch event data
   useEffect(() => {
@@ -102,7 +103,7 @@ const PostPage = () => {
         >
           <LeaveCommentChart event = {event} commentState={commentState} setCommentState={setCommentState}/>
         </Box>
-        <CommentCard event = {event} commentState={commentState} setCommentState={setCommentState}/>
+        <CommentCard event = {event} commentState={commentState} setCommentState={setCommentState} />
       </VStack>
     </Container>
   );

@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from 'react'
-import { HStack, VStack, Box, Button, Textarea, Spacer, Text, Image } from '@chakra-ui/react';
+import { HStack, VStack, Box, Button, Textarea, Spacer, Text, Image, Portal } from '@chakra-ui/react';
 import { useUserStore } from '../../store/user';
 import { useEventStore } from '../../store/event';
 import { useDialogStore } from '../../store/dialog';
-import { toaster } from "./toaster";
-import { get } from 'mongoose';
+import Reply from './Reply';
 
 
-const CommentCard = ({event, commentState, setCommentState}) => {
+const CommentCard = ({event, commentState, setCommentState }) => {
     const bgColor = "gray.150";
     const currUser = useUserStore((state) => state.curr_user); // current user
     const openLogin = useDialogStore((state) => state.openLogin); // login prompt
@@ -15,11 +14,12 @@ const CommentCard = ({event, commentState, setCommentState}) => {
 
     const {fetchUser, user} = useUserStore();
     const [userComment, setUserComment] = useState(""); // store user's current comment
-    const [isPost, setIsPost] = useState(false);
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
 
     let headComment = [];
     let childComment = {};
     let curId = "";
+    let dialogOpen = false;
     
     useEffect(() => {
         if (event._id) {
@@ -28,8 +28,7 @@ const CommentCard = ({event, commentState, setCommentState}) => {
         if (curId != "") {
             fetchUser(curId);
         }
-        console.log(commentState);
-        console.log(comments);
+        setIsDialogOpen(false);
         setCommentState(false);
     }, [event.comments, curId, commentState, fetchComments]);
 
@@ -48,8 +47,8 @@ const CommentCard = ({event, commentState, setCommentState}) => {
         }
     };
 
-    const handleReply = async () => {
-
+    const handleReply = () => {
+        setIsDialogOpen(true);
     };
 
     return (
@@ -121,6 +120,8 @@ const CommentCard = ({event, commentState, setCommentState}) => {
                                     Reply
                                 </Button>
                             )}
+                            {!dialogOpen && <Reply event={event} isDialogOpen={isDialogOpen} setIsDialogOpen={setIsDialogOpen} commentState={commentState} setCommentState={setCommentState} target={head._id}/>}
+                            {!dialogOpen == isDialogOpen && (dialogOpen = true)}
                         </VStack>
                     </HStack>
                 </Box>

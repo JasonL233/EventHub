@@ -1,4 +1,4 @@
-import React, { useState, useRef, useContext } from 'react'
+import React, { useState, useRef } from 'react'
 import { HStack, VStack, Image, Button, Textarea, Spacer } from '@chakra-ui/react';
 import { useUserStore } from '../../store/user';
 import { useEventStore } from '../../store/event';

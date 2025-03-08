@@ -10,7 +10,7 @@ const Navbar = () => {
 
   const [searchText, setSearchText] = useState('');
   const [searchType, setSearchType] = useState('Event Title');
-  const {fetchEventsByTitle, fetchEvents} = useEventStore();
+  const {fetchEventsByTitle, fetchEvents, fetchEventsByUsername, fetchEventsByTag} = useEventStore();
 
   const handleSearch = async (query) => {
     const searchQuery = query || searchText;
@@ -24,13 +24,12 @@ const Navbar = () => {
     switch (searchType) {
       case "Event Title" : 
         fetchEventsByTitle(searchQuery);
-        console.log("searchQuery: ", searchQuery)
         break;
       case "Event Tag" :
-        /* todo */
+        fetchEventsByTag(searchQuery);
           break;
       case "Username" :
-        /* todo */
+        fetchEventsByUsername(searchQuery);
           break;
       default :
         break;
@@ -47,7 +46,7 @@ const Navbar = () => {
   return (
     <Flex align="center" justify="center">
       <HStack h="150px" w="1000px" align="center" justify="center" mt="-20px">
-        <NativeSelect.Root w="150px" variant="filled">
+        <NativeSelect.Root w="150px" variant="outline" colorPalette="black" size="md">
             <NativeSelect.Field color="black" onChange={(e) => setSearchType(e.target.value)}>
               <option value="Event Title">Event Title</option>
               <option value="Event Tag">Event Tag</option>

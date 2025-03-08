@@ -35,6 +35,23 @@ export const useEventStore = create((set) => ({
     const data = await respond.json();
     set({ events: data.data });
     set({ searchText: title});
+    set({ searchType: "Event Title"});
+  },
+
+  fetchEventsByUsername: async(username) => {
+    const respond = await fetch(`/api/search/users/${username}`);
+    const data = await respond.json();
+    set({ events: data.data });
+    set({ searchText: username});
+    set({ searchType: "Username"});
+  },
+
+  fetchEventsByTag: async (tag) => {
+    const respond = await fetch(`/api/search/tag/${tag}`);
+    const data = await respond.json();
+    set({ events: data.data});
+    set({ searchText: tag});
+    set({ searchType: "Event Tag"});
   },
 
   // Create event with FormData
@@ -132,8 +149,5 @@ export const useEventStore = create((set) => ({
   },
 
 
-  updateSearchType : (type) => {
-    set({ searchType: type});
-  },
   
 }));

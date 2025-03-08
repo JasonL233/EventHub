@@ -1,8 +1,10 @@
 import { create } from "zustand";
+import { replyComment } from "../../../backend/controllers/event.controller";
 
 export const useEventStore = create((set) => ({
   event: [],
   events: [],
+  comments: [],
   searchType: "Event Title",
   searchText: "",
 
@@ -20,38 +22,35 @@ export const useEventStore = create((set) => ({
     set({ events: data.data });
   },
 
+  // GET all comments
+  fetchComments: async (event_id) => {
+    const res = await fetch(`/api/events/${event_id}/comments`);
+    const data = await res.json();
+    set({ comments: data.data });
+  },
+
   // Get events that match title
   fetchEventsByTitle: async (title) => {
     const respond = await fetch(`/api/search/events/${title}`);
     const data = await respond.json();
-    const searchedEvents = data.data
-    if (searchedEvents.length === 0){
-      console.log("NO EVENTS")
-    }
     set({ events: data.data });
     set({ searchText: title});
   },
 
-  createEvent: async (newEvent) => {
-    if (
-      !newEvent.title?.trim() ||
-      !newEvent.mediaUrl?.trim() ||
-      !newEvent.description?.trim() ||
-      !newEvent.publisherId
-    ) {
-      return {
-        success: false,
-        message: "Please provide title, description, mediaUrl, and publisherId",
-      };
-    }
-
+  // Create event with FormData
+  createEvent: async (formData) => {
     const res = await fetch("/api/events", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(newEvent),
+      body: formData,
     });
 
     const data = await res.json();
+
+    if (!data.success) {
+      return { success: false, message: data.message };
+    }
+
+    // If success, push new event to store
     set((state) => ({ events: [...state.events, data.data] }));
     return { success: true, message: "Event created successfully" };
   },
@@ -82,6 +81,56 @@ export const useEventStore = create((set) => ({
       ),
     }));
   },
+
+  addComment: async (event_id, user_id, newComment) => {
+    const res = await fetch(`/api/events/${event_id}/comment`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        user_id,
+        comment: newComment,
+      }),
+    });
+
+    if (!res.ok) {
+      console.error("Failed to add comment");
+      return;
+    }
+
+    const data = await res.json();
+    set((state) => ({
+      events: state.events.map((evn) =>
+        evn._id === event_id
+          ? { ...evn, comments:data.data.comments }
+          : evn
+      ),
+    }));
+    return { success: true, message: "Adding new comment successfully" };
+  },
+
+  // Reply a comment
+  replyComment: async (event_id, user_id, newComment, target) => {
+    const res = await fetch(`/api/events/${event_id}/reply`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        user_id,
+        comment: newComment,
+        reply_to: target
+      }),
+    });
+
+    const data = await res.json();
+    set((state) => ({
+      events: state.events.map((evn) =>
+        evn._id === event_id
+          ? { ...evn, comments:data.data.comments }
+          : evn
+      ),
+    }));
+    return { success: true, message: "Adding new reply successfully" };
+  },
+
 
   updateSearchType : (type) => {
     set({ searchType: type});

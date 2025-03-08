@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { Box, Button, Container, Flex, Input, Textarea, Image, Text, Heading } from "@chakra-ui/react";
 import { useEventStore } from "../store/event";
 import { toaster } from "../components/ui/toaster";
@@ -7,31 +7,85 @@ import { useNavigate } from "react-router-dom";
 
 const CreatePage = () => {
   const currUser = useUserStore((state) => state.curr_user);
-  // State to manage event details: title, description, and cover image
+
+  // Form fields
   const [newEvent, setNewEvent] = useState({
     title: "",
     description: "",
     mediaUrl: "",
     eventType: "image", // Default media type
     publisherId: currUser._id,
+    tags: []
   });
 
-  // Prompt the user to enter URL and update the state
-  const handleMediaUpload = () => {
-    const mediaUrl = prompt("Please enter the media URL:");  // Popup input box
-    if (mediaUrl) {
-      setNewEvent(prevState => ({ ...prevState, mediaUrl }));
-      alert("Media address has been updated!");
-    }
-  };
+  // State for tag input
+  const [tagInput, setTagInput] = useState("");
+
+  const [selectedFile, setSelectedFile] = useState(null);
+  const fileInputRef = useRef(null);
 
   const { createEvent } = useEventStore();
   const navigate = useNavigate(); // Initialize navigate function
   // console.log("Toaster Object:", toaster);
 
-  // Handle form submission
+  // Click preview area to trigger file input
+  const handleClickUploadArea = () => {
+    fileInputRef.current.click();
+  };
+
+  // On file selection, store the file & create local preview
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setSelectedFile(file);
+      setNewEvent((prevState) => ({
+        ...prevState,
+        mediaUrl: URL.createObjectURL(file), // local preview only
+      }));
+    }
+  };
+
+  // Submit form: send file + fields via FormData
+  // Add tag when Enter is pressed in the tag input box.
+  const handleTagKeyDown = (e) => {
+    if (e.key === "Enter" && tagInput.trim() !== "") {
+      setNewEvent((prevState) => ({
+        ...prevState,
+        tags: [...prevState.tags, tagInput.trim()]
+      }));
+      setTagInput("");
+    }
+  };
+
+  // Delete tag
+  const removeTag = (indexToRemove) => {
+    setNewEvent((prevState) => ({
+      ...prevState,
+      tags: prevState.tags.filter((_, index) => index !== indexToRemove)
+    }));
+  };
+
   const handleSubmit = async () => {
-    const { success, message } = await createEvent(newEvent);
+    if (!selectedFile) {
+      alert("Please select a file!");
+      return;
+    }
+    if (!newEvent.title.trim() || !newEvent.description.trim()) {
+      alert("Please fill in title and description!");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("image", selectedFile); // "image" must match backend Multer field name
+    formData.append("title", newEvent.title);
+    formData.append("description", newEvent.description);
+    formData.append("eventType", newEvent.eventType);
+    formData.append("publisherId", newEvent.publisherId);
+
+    formData.append("tags", JSON.stringify(newEvent.tags));
+  
+    const { success, message } = await createEvent(formData);
+
     if (!success) {
       toaster.create({
         title: "Error",
@@ -41,16 +95,27 @@ const CreatePage = () => {
         isCloseable: true,
       });
       return;
-    } else {
-      toaster.create({
-        title: "Success",
-        description: message,
-        type: "success",
-        duration: 1500,
-        isCloseable: true,
-      });
     }
-    setNewEvent({ title: "", description: "", mediaUrl: "", eventType: "image", publisherId: currUser._id });
+
+    toaster.create({
+      title: "Success",
+      description: message,
+      type: "success",
+      duration: 1500,
+      isCloseable: true,
+    });
+
+    // Reset
+    setNewEvent({
+      title: "",
+      description: "",
+      eventType: "image",
+      publisherId: currUser._id,
+      mediaUrl: "",
+      tags: []
+    });
+    setSelectedFile(null);
+
     setTimeout(() => {
       navigate("/"); // Redirect to main page after 1 second
     }, 10);
@@ -78,7 +143,7 @@ const CreatePage = () => {
           <select
             value={newEvent.eventType}
             onChange={(e) => setNewEvent({ ...newEvent, eventType: e.target.value })}
-            style={{ padding: "8px", borderRadius: "4px", border: "1px solid gray" }}
+            style={{ padding: "8px", borderRadius: "4px", border: "1px solid gray", color: "black" }}
           >
             <option value="image">image</option>
             <option value="video">video</option>
@@ -99,7 +164,7 @@ const CreatePage = () => {
             height="180px"
             cursor="pointer"
             _hover={{ borderColor: "gray.600" }}
-            onClick={handleMediaUpload}
+            onClick={handleClickUploadArea}
             transition="0.2s"
             bg="gray.100"
           >
@@ -124,6 +189,14 @@ const CreatePage = () => {
               <Text fontSize="xl" color="gray.500">+</Text>
             )}
           </Flex>
+          {/* Hidden input for file */}
+          <input
+            type="file"
+            accept="image/*,video/*"
+            ref={fileInputRef}
+            style={{ display: "none" }}
+            onChange={handleFileChange}
+          />
         </Box>
 
         {/* Content - Below cover picture */}
@@ -163,6 +236,42 @@ const CreatePage = () => {
         </Box>
 
         {/* Post Button */}
+        <Box width="100%" mb={4}>
+          <Text fontSize="lg" fontWeight="semibold" color="gray.600" mb={2}>
+            Tags
+          </Text>
+          <Flex wrap="wrap" mb={2}>
+            {newEvent.tags.map((tag, index) => (
+              <Box
+                key={index}
+                bg="gray.200"
+                color="black"
+                px={3}
+                py={1}
+                mr={2}
+                mb={2}
+                borderRadius="md"
+                display="flex"
+                alignItems="center"
+              >
+                <Text>{tag}</Text>
+                <Button size="xs" ml={2} onClick={() => removeTag(index)}>x</Button>
+              </Box>
+            ))}
+          </Flex>
+          <Input
+            placeholder="Enter a tag and press Enter"
+            value={tagInput}
+            onChange={(e) => setTagInput(e.target.value)}
+            onKeyDown={handleTagKeyDown}
+            border="1px solid gray.300"
+            borderRadius="md"
+            _focus={{ borderColor: "blue.400", boxShadow: "outline" }}
+            color="black"
+            _placeholder={{ color: "gray.500" }}
+          />
+        </Box>
+
         <Button
           colorScheme="blue"
           width="100%"

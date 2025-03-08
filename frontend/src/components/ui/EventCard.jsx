@@ -47,7 +47,10 @@ const EventCard = ({event, user}) => {
             </Heading>
 
             <HStack spacing={2} justifyContent="space-between" w="full">
-                <Text color="black">{findUsername(users, event.publisherId)}</Text>
+                <HStack>
+                  <Image src={findProfileImage(users, event.publisherId)} boxSize="25px" objectFit="cover" m={0} p={0} />
+                  <Text color="black">{findUsername(users, event.publisherId)}</Text>
+                </HStack>
                 
                 <HStack spacing={2}>
                   <LikeButton initialLiked={liked} user={user} onLike={handleLike}/>
@@ -63,6 +66,11 @@ const findUsername = (users, publisherId) => {
   const user = users.find((user) => user._id === publisherId);
   console.log("USERNAME", user);
   return user ? user.username : "Unknown User";
+};
+
+const findProfileImage = (users, publisherId) => {
+  const user = users.find((user) => user._id === publisherId);
+  return user ? user.profileImage : "";
 };
 
 

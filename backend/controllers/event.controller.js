@@ -8,7 +8,7 @@ export const getEvents = async (req, res) => {
     res.status(200).json({ success: true, data: events });
   } catch (error) {
     console.log("error in fetching events:", error.message);
-    res.status(500).json({ success: false, message: "Sever Error" });
+    res.status(500).json({ success: false, message: "Server Error" });
   }
 };
 
@@ -18,12 +18,9 @@ export const getEvent = async (req, res) => {
 
   try {
     const event = await Event.findById(id);
-
-    if (!event)
-      return res
-        .status(404)
-        .json({ success: false, message: "Event not found" });
-
+    if (!event) {
+      return res.status(404).json({ success: false, message: "Event not found" });
+    }
     res.status(200).json({ success: true, data: event });
   } catch (error) {
     console.error("Error in fetching event: ", error.message);
@@ -39,59 +36,71 @@ export const getEvent = async (req, res) => {
 
 // Creating events: support for images and videos
 export const createEvent = async (req, res) => {
-  const { title, description, mediaUrl, eventType, publisherId, comments, likes } = req.body;
-
-  // Validate required fields
-  if (!title || !description || !mediaUrl || !publisherId) {
-    return res.status(400).json({
-      success: false,
-      message: "Please provide title, description, mediaUrl, and publisherId",
-    });
-  }
-
-  // Validate publisherId as ObjectId
-  if (!mongoose.Types.ObjectId.isValid(publisherId)) {
-    return res.status(400).json({
-      success: false,
-      message: "Invalid publisherId format",
-    });
-  }
-
-  const newEvent = new Event({
-    title,
-    description,
-    mediaUrl,
-    eventType: eventType || "image", // Default type is image
-    publisherId,
-    likes: likes || 0,
-    comments: comments || [],
-  });
-
   try {
+    const { title, description, eventType, publisherId, tags } = req.body;
+
+    // Validate required fields
+    if (!title || !description || !publisherId) {
+      return res.status(400).json({
+        success: false,
+        message: "Missing required fields (title, description, publisherId)",
+      });
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(publisherId)) {
+      return res.status(400).json({ success: false, message: "Invalid publisherId format" });
+    }
+
+    // Check file
+    if (!req.file) {
+      return res.status(400).json({ success: false, message: "Please upload a file" });
+    }
+
+    const mediaUrl = `http://localhost:4000/uploads/${req.file.filename}`;
+
+    let parsedTags = [];
+    if (tags) {
+      try {
+        parsedTags = JSON.parse(tags);
+      } catch (err) {
+        parsedTags = [];
+      }
+    }
+
+    const newEvent = new Event({
+      title,
+      description,
+      mediaUrl,
+      eventType: eventType || "image",
+      publisherId,
+      likes: 0,
+      comments: [],
+      tags: parsedTags,
+    });
+
     await newEvent.save();
-    res.status(201).json({ success: true, data: newEvent });
+    return res.status(201).json({
+      success: true,
+      data: newEvent,
+      message: "Event created successfully",
+    });
   } catch (error) {
     console.error("Error in creating event:", error.message);
-    res.status(500).json({ success: false, message: "Sever Error" });
+    res.status(500).json({ success: false, message: "Server Error" });
   }
 };
 
 export const updateEvent = async (req, res) => {
   const { id } = req.params;
-
-  const event = req.body;
-
   if (!mongoose.Types.ObjectId.isValid(id)) {
-    return res.status(404).json({ sucess: false, message: "Invalid Event Id" });
+    return res.status(404).json({ success: false, message: "Invalid Event Id" });
   }
-
   try {
-    const updatedEvent = await Event.findByIdAndUpdate(id, event, {
-      new: true,
-    });
+    const event = req.body;
+    const updatedEvent = await Event.findByIdAndUpdate(id, event, { new: true });
     res.status(200).json({ success: true, data: updatedEvent });
   } catch (error) {
-    res.status(500).json({ success: false, message: "Sever Error" });
+    res.status(500).json({ success: false, message: "Server Error" });
   }
 };
 
@@ -110,35 +119,103 @@ export const deleteEvent = async (req, res) => {
 export const likeEvent = async (req, res) => {
   const { id } = req.params;
   const { user_id, action, likes } = req.body;
-
-  if (!mongoose.Types.ObjectId.isValid(id))
-    return res
-      .status(400)
-      .json({ success: false, message: "Invalid event ID" });
-
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(400).json({ success: false, message: "Invalid event ID" });
+  }
   try {
-    let update = { likes: likes };
-
+    const update = { likes };
     if (action === "like") update.$addToSet = { likedBy: user_id };
     else if (action === "unlike") update.$pull = { likedBy: user_id };
-    else
-      return res
-        .status(400)
-        .json({ success: false, message: "Invalid action" });
+    else return res.status(400).json({ success: false, message: "Invalid action" });
 
-    const updatedEvent = await Event.findByIdAndUpdate(id, update, {
-      new: true,
-      runValidators: true,
-    });
-
-    if (!updateEvent)
-      return res
-        .status(404)
-        .json({ success: false, message: "Event not found" });
-
+    const updatedEvent = await Event.findByIdAndUpdate(id, update, { new: true, runValidators: true });
+    if (!updatedEvent) {
+      return res.status(404).json({ success: false, message: "Event not found" });
+    }
     res.status(200).json({ success: true, data: updatedEvent });
   } catch (error) {
     console.error("Error updating likes:", error.message);
-    res.status(500).json({ success: false, message: "Server error" });
+    res.status(500).json({ success: false, message: "Server Error" });
+  }
+
+};
+
+
+// Adding comment
+export const addComment = async (req, res) => {
+  const { id } = req.params;
+  const { user_id, comment } = req.body;
+  
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(400).json({ success: false, message: "Invalid event ID" });
+  }
+  if (!mongoose.Types.ObjectId.isValid(user_id)) {
+    return res.status(400).json({ success: false, message: "Invalid user ID" });
+  }
+
+  try {
+    const event = await Event.findById(id);
+    if (!event) {
+      return res.status(404).json({ success: false, message: "Event not found" });
+    }
+    event.comments.push({ userId: user_id, comment: comment });
+    await event.save();
+
+    const updatedEvent = await Event.findById(id);
+    res.status(200).json({ success: true, data: updatedEvent });
+  } catch (error) {
+    console.error("Error Adding Comment:", error.message);
+    res.status(500).json({ success: false, message: "Server Error" });
+  }
+};
+
+
+// Reply comment
+export const replyComment = async (req, res) => {
+  const { id } = req.params;
+  const { user_id, comment, reply_to } = req.body;
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(400).json({ success: false, message: "Invalid event ID" });
+  }
+  if (!mongoose.Types.ObjectId.isValid(user_id)) {
+    return res.status(400).json({ success: false, message: "Invalid user ID" });
+  }
+
+  try {
+    const event = await Event.findById(id);
+    if (!event) {
+      return res.status(404).json({ success: false, message: "Event not found" });
+    }
+    event.comments.push({ replyTo: reply_to, userId: user_id, comment: comment });
+    await event.save();
+
+    const updatedEvent = await Event.findById(id);
+    res.status(200).json({ success: true, data: updatedEvent });
+  } catch (error) {
+    console.error("Error Replying Comment:", error.message);
+    res.status(500).json({ success: false, message: "Server Error" });
+  }
+};
+
+// Get all comments by evet id
+export const getComments = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const event = await Event.findById(id);
+    if (!event) {
+      return res.status(404).json({ success: false, message: "Event not found" });
+    }
+    res.status(200).json({ success: true, data: event.comments });
+  } catch (error) {
+    console.error("Error in fetching comments: ", error.message);
+
+    if (error.name === "CastError")
+      return res
+        .status(400)
+        .json({ success: true, message: "Invalid event ID format" });
+
+    res.status(500).json({ success: false, message: "Server Error" });
   }
 };

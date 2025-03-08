@@ -197,3 +197,25 @@ export const replyComment = async (req, res) => {
     res.status(500).json({ success: false, message: "Server Error" });
   }
 };
+
+// Get all comments by evet id
+export const getComments = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const event = await Event.findById(id);
+    if (!event) {
+      return res.status(404).json({ success: false, message: "Event not found" });
+    }
+    res.status(200).json({ success: true, data: event.comments });
+  } catch (error) {
+    console.error("Error in fetching comments: ", error.message);
+
+    if (error.name === "CastError")
+      return res
+        .status(400)
+        .json({ success: true, message: "Invalid event ID format" });
+
+    res.status(500).json({ success: false, message: "Server Error" });
+  }
+};

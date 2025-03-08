@@ -1,32 +1,42 @@
-import React, { useState, useRef, useEffect } from 'react'
-import { HStack, VStack, Box, Button, Textarea, Spacer, Text } from '@chakra-ui/react';
+import React, { useState, useEffect } from 'react'
+import { HStack, VStack, Box, Button, Textarea, Spacer, Text, Image, Portal } from '@chakra-ui/react';
 import { useUserStore } from '../../store/user';
 import { useEventStore } from '../../store/event';
 import { useDialogStore } from '../../store/dialog';
-import { toaster } from "./toaster";
+import Reply from './Reply';
 
-const CommentCard = ({event}) => {
+
+const CommentCard = ({event, commentState, setCommentState }) => {
     const bgColor = "gray.150";
-    const user = useUserStore((state) => state.curr_user); // current user
+    const currUser = useUserStore((state) => state.curr_user); // current user
     const openLogin = useDialogStore((state) => state.openLogin); // login prompt
-    const {replyComment} = useEventStore(); // Reply other comments
+    const {fetchComments, comments} = useEventStore(); // Reply other comments
 
+    const {fetchUser, user} = useUserStore();
     const [userComment, setUserComment] = useState(""); // store user's current comment
-    const [isPost, setIsPost] = useState(false);
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-    const [comments, setComments] = useState(event.comments);
     let headComment = [];
     let childComment = {};
+    let curId = "";
+    let dialogOpen = false;
     
     useEffect(() => {
-        if (event) {
-            setComments(event.comments);
+        if (event._id) {
+            fetchComments(event._id);
         }
-    }, [comments, event]);
+        if (curId != "") {
+            fetchUser(curId);
+        }
+        setIsDialogOpen(false);
+        setCommentState(false);
+    }, [event.comments, curId, commentState, fetchComments]);
 
     const sortComment = () => {
-        if (event.comments != null) {
-            for (let comment of event.comments) {
+        headComment = [];
+        childComment = {};
+        if (comments != null) {
+            for (let comment of comments) {
                 childComment[String(comment._id)] = [];
                 if (comment.replyTo === null) {
                     headComment.push(comment);
@@ -35,6 +45,10 @@ const CommentCard = ({event}) => {
                 }
             }
         }
+    };
+
+    const handleReply = () => {
+        setIsDialogOpen(true);
     };
 
     return (
@@ -50,15 +64,38 @@ const CommentCard = ({event}) => {
                     shadow = {"md"}
                     border={"black"}
                 >
+                    {curId = head.userId}
                     <HStack>
                         <VStack>
                         {/*Display user info*/}
-
+                            <Image 
+                                src={user.profileImage} 
+                                shadow={"md"} 
+                                border="black"
+                                borderRadius={"full"} 
+                                boxSize={"70px"}
+                                objectFit={"cover"}
+                                alignSelf={"flex-start"}
+                            />
                         </VStack>
-                        <VStack>
+                        <VStack
+                            w={"full"}
+                            color={"gray.300"}
+                        >
                         {/*Display user comment to the post*/}
                             <Text
-                                fontSize={"30"}
+                                fontSize={"xl"}
+                                fontWeight={"bold"}
+                                bgClip={"text"}
+                                textAlign={"left"}
+                                color={"black"}
+                                whiteSpace={"pre-line"}
+                                alignSelf={"flex-start"}
+                            >
+                                {user.username + ":"}
+                            </Text>
+                            <Text
+                                fontSize={"md"}
                                 bgClip={"text"}
                                 textAlign={"left"}
                                 color={"black"}
@@ -67,10 +104,26 @@ const CommentCard = ({event}) => {
                             >
                                 {head.comment}
                             </Text>
+                            {currUser && (
+                                <Button
+                                    style={{ 
+                                        border: 'black', 
+                                        background: 'black', 
+                                        cursor: 'pointer',
+                                        fontSize: '24px',
+                                        color: 'white',
+                                        alignSelf: 'end'
+                                        }}
+                                    onClick={handleReply}
+                                    rounded={"lg"}
+                                >
+                                    Reply
+                                </Button>
+                            )}
+                            {!dialogOpen && <Reply event={event} isDialogOpen={isDialogOpen} setIsDialogOpen={setIsDialogOpen} commentState={commentState} setCommentState={setCommentState} target={head._id}/>}
+                            {!dialogOpen == isDialogOpen && (dialogOpen = true)}
                         </VStack>
                     </HStack>
-                    
-                    
                 </Box>
             ))}
         </>

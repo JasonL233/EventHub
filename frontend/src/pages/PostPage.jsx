@@ -1,13 +1,12 @@
-import React, { createContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams } from "react-router-dom";
-import {VStack, Text, Container, Heading, Button, Box, Image, HStack} from "@chakra-ui/react";
+import {VStack, Text, Container, Heading, Box, Image, HStack} from "@chakra-ui/react";
 import {useEventStore} from "../store/event.js";
 import AutoLikeButton from '../components/ui/AutoLikeButton.jsx';
 import { useUserStore } from '../store/user.js';
-import { useDialogStore } from '../store/dialog.js';
 import CommentCard from '../components/ui/CommentCard.jsx';
 import LeaveCommentChart from '../components/ui/LeaveCommentChart.jsx';
-import Reply from '../components/ui/Reply.jsx';
+
 
 const PostPage = () => {
   const bgColor = "gray.150";
@@ -41,17 +40,18 @@ const PostPage = () => {
             loop
             controls
             width="100%"
-            style={{ objectFit: "cover", border: "black", borderColor: "black" }}
+            maxH={"800px"}
+            style={{ objectFit: "conatin", border: "black", borderColor: "black" }}
           />
         ) : (
           <Image
             src={event.mediaUrl}
-            width="100%"
-            height="100%"
-            objectFit="cover"
+            objectFit="contain"
             border="black"
             borderColor="black"
             rounded={"lg"}
+            w="100%"
+            maxH={"800px"}
           />
         )}
         <Box 

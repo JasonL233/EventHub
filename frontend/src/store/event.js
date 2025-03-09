@@ -5,8 +5,9 @@ export const useEventStore = create((set) => ({
   event: [],
   events: [],
   comments: [],
-  searchType: "Event Title",
+  searchType: "Combined",
   searchText: "",
+  isCombineSearching: false,
 
   // GET single event data
   fetchEvent: async (_id) => {
@@ -20,6 +21,8 @@ export const useEventStore = create((set) => ({
     const res = await fetch("/api/events");
     const data = await res.json();
     set({ events: data.data });
+    set({searchType: "Combined"});
+    set({serachText: ""});
   },
 
   // GET all comments
@@ -38,7 +41,8 @@ export const useEventStore = create((set) => ({
     set({ searchType: "Event Title"});
   },
 
-  fetchEventsByUsername: async(username) => {
+  fetchEventsByUsername: async (username) => {
+    console.log("NAME: ", username);
     const respond = await fetch(`/api/search/users/${username}`);
     const data = await respond.json();
     set({ events: data.data });
@@ -52,6 +56,15 @@ export const useEventStore = create((set) => ({
     set({ events: data.data});
     set({ searchText: tag});
     set({ searchType: "Event Tag"});
+  },
+
+  fetchEventsByAll: async (query) => {
+    const respond = await fetch(`/api/search/all/${query}`);
+    const data = await respond.json();
+    set({events: data.data});
+    set({searchText: query});
+    set({searchType: "Combined"});
+    set({isCombineSearching: true});
   },
 
   // Create event with FormData
@@ -149,5 +162,11 @@ export const useEventStore = create((set) => ({
   },
 
 
-  
+  setIsCombinedSearching: async (isCombined) => {
+    set({isCombineSearching: isCombined});
+  },
+
+  setSearchText: async (text) => {
+    set({searchText: text});
+  }
 }));

@@ -7,11 +7,10 @@ import { useUserStore } from '../../store/user';
 import EventButton from './EventButton';
 
 const EventCard = ({event, user}) => {
-  console.log(user);
+  // console.log(user);
   const {updateLikes} = useEventStore();
   const {updateLikedPost} = useUserStore();
   const openLogin = useDialogStore((state) => state.openLogin);
-  const users = useUserStore((state) => state.users); 
 
   const [likes, setLikes] = useState(event.likes);
   const [liked, setLiked] = useState(false);
@@ -38,6 +37,8 @@ const EventCard = ({event, user}) => {
       openLogin();
   }
 
+  // console.log(event.publisherId?.username);
+
   return (
     <Box rounded='lg' overflow='hidden' transition='all 0.3s' _hover={{ transform: "translateY(-5px)", shadow: "x1"}} m={1} maxW="400px" w="full">
         <EventButton id = {event._id} mediaSrc = {event.mediaUrl} eventTitle = {event.title} isImage = {event.eventType === "image"}/>
@@ -48,7 +49,7 @@ const EventCard = ({event, user}) => {
 
             <HStack spacing={2} justifyContent="space-between" w="full">
                 <HStack>
-                  <Image src={event.publisherId?.profileImage || ""} boxSize="25px" objectFit="cover" m={0} p={0} />
+                  <Image src={event.publisherId?.profileImage || null} boxSize="25px" objectFit="cover" m={0} p={0} />
                   <Text color="black">{event.publisherId?.username || "Unkonwn user"}</Text>
                 </HStack>
                 
@@ -61,18 +62,6 @@ const EventCard = ({event, user}) => {
     </Box>
   )
 }
-
-const findUsername = (users, publisherId) => {
-  const user = users.find((user) => user._id === publisherId);
-  console.log("USERNAME", user);
-  return user ? user.username : "Unknown User";
-};
-
-const findProfileImage = (users, publisherId) => {
-  const user = users.find((user) => user._id === publisherId);
-  return user ? user.profileImage : "";
-};
-
 
 export default EventCard
 

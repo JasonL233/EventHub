@@ -39,7 +39,6 @@ const AutoLikeButton = ( {event} ) => {
                 const newLikes = isLiked ? currLikes + 1 : currLikes - 1;
                 updateLikes(curEvent._id, user._id, isLiked, newLikes); // Update Event Information
                 updateLikedPost(user._id, curEvent._id, isLiked); // Update User Information
-                console.log(newLikes);
                 return newLikes;
             }));
         }

@@ -1,9 +1,10 @@
-import { Container, Flex } from "@chakra-ui/react";
+import { Container, Flex, Box } from "@chakra-ui/react";
 import { Outlet } from "react-router-dom";
 import Sidebar from "./Sidebar"
 import Navbar from "./Navbar"
+import Tagbar from "./Tagbar"
 import LoginPage from "../../pages/LoginPage"
-import {Toaster, toaster} from "./toaster"
+import {Toaster} from "./toaster"
 
 // Layout Component
 const Layout = () => {  // Arrow function that returns a React JSX structure
@@ -12,13 +13,10 @@ const Layout = () => {  // Arrow function that returns a React JSX structure
     <>
       <Toaster />
       <Flex direction="column" height="100vh" p={3} overflow="hidden">
-        <Container maxW="100%" height="8%" color="white" bg="green.100">
+        <Container maxW="100%" height="8%" color="white"  display="flex" alignItems="center" justifyContent="center">
           <Navbar />
         </Container>
 
-        <Container height="4%" >
-
-        </Container>
         
         <Flex flex="1" overflow="auto">  
           <Container 
@@ -38,13 +36,16 @@ const Layout = () => {  // Arrow function that returns a React JSX structure
             <Sidebar />
           </Container>
 
-          <Container 
-            maxW="100%" 
-            sx={{ "@media (min-width: 1000px)": { maxW: "83%" } }}
-            overflow="auto"
-          >  
-            <Outlet />  
-          </Container>
+          <Flex direction="column" flex="1" overflow="auto">
+            {/* ✅ Tagbar and Outlet wrapped together in a column */}
+            <Box w="100%" px={4} py={3} borderBottom="1px solid #ddd">
+              <Tagbar />
+            </Box>
+
+            <Box flex="1" w="100%" px={4} py={3}>
+              <Outlet />
+            </Box>
+          </Flex>
         </Flex>
         
         <LoginPage />

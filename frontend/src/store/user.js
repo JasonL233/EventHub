@@ -12,6 +12,7 @@ export const useUserStore = create(
 
     setUsers: (users) => set({ users }),
     setCurrentUser: (user) => set({ curr_user: user, isLoggedIn: !!user }),
+    
 
     fetchUser: async(user_id) => {
       const respond = await fetch(`/api/users/${user_id}`);
@@ -191,6 +192,8 @@ export const useUserStore = create(
         });
       }
     },
+
+
   }))
 
 );

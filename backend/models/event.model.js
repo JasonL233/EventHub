@@ -20,7 +20,7 @@ const eventSchema = new mongoose.Schema({
   },
   publisherId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "user",
+    ref: "User",
     required: true,
   },
   likes: {

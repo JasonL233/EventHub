@@ -1,17 +1,6 @@
 import mongoose from "mongoose";
 import Event from "../models/event.model.js";
 
-// Get all events
-export const getEvents = async (req, res) => {
-  try {
-    const events = await Event.find({});
-    res.status(200).json({ success: true, data: events });
-  } catch (error) {
-    console.log("error in fetching events:", error.message);
-    res.status(500).json({ success: false, message: "Server Error" });
-  }
-};
-
 // Get single specific event
 export const getEvent = async (req, res) => {
   const { id } = req.params;
@@ -30,6 +19,19 @@ export const getEvent = async (req, res) => {
         .status(400)
         .json({ success: true, message: "Invalid event ID format" });
 
+    res.status(500).json({ success: false, message: "Server Error" });
+  }
+};
+
+// Get all events
+export const getEvents = async (req, res) => {
+  try {
+    const events = await Event.find({})
+      .populate("publisherId", "-password");
+
+    res.status(200).json({ success: true, data: events });
+  } catch (error) {
+    console.log("error in fetching events:", error.message);
     res.status(500).json({ success: false, message: "Server Error" });
   }
 };

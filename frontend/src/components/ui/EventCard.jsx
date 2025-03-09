@@ -50,8 +50,9 @@ const EventCard = ({event, user}) => {
 
             <HStack spacing={2} justifyContent="space-between" w="full">
                 <HStack>
-                  <Image src={findProfileImage(users, event.publisherId)} boxSize="25px" objectFit="cover" m={0} p={0} />
-                  <Text color="black">{findUsername(users, event.publisherId)}</Text>
+                <Image src={event.publisherId?.profileImage || null} boxSize="25px" objectFit="cover" m={0} p={0} />
+                <Text color="black">{event.publisherId?.username || "Unkonwn user"}</Text>
+                  
                 </HStack>
                 
                 <HStack spacing={2}>

@@ -13,24 +13,59 @@ const CommentCard = ({event, commentState, setCommentState }) => {
     const {fetchComments, comments} = useEventStore(); // Reply other comments
 
     const {fetchUser, user} = useUserStore();
-    const [userComment, setUserComment] = useState(""); // store user's current comment
     const [isDialogOpen, setIsDialogOpen] = useState(false);
 
     let headComment = [];
     let childComment = {};
-    let curId = "";
+    const [userDic, setUserDic] = useState({});
     let dialogOpen = false;
+    let curId = "";
     
     useEffect(() => {
-        if (event._id) {
+        if (event._id != null) {
             fetchComments(event._id);
-        }
-        if (curId != "") {
-            fetchUser(curId);
         }
         setIsDialogOpen(false);
         setCommentState(false);
-    }, [event.comments, curId, commentState, fetchComments]);
+    }, [curId, event.comments, commentState, fetchComments, fetchUser]);
+
+    useEffect(() => {
+        const fetchUsers = async () => {
+            if (comments != null) {
+                for (let comment of comments) {
+                    console.log(comment.userId);
+                    if (comment.userId != null) {
+                        const respond = await fetch(`/api/users/${comment.userId}`);
+                        const data = await respond.json();
+                        setUserDic(prev => ({
+                            ...prev,
+                            [String(comment._id)]: {
+                                username: data.data.username,
+                                profileImage: data.data.profileImage
+                            }
+                        }));
+                        /*
+                        await fetchUser(comment.userId).then(
+                            setUserDic(prev => ({
+                                ...prev,
+                                [String(comment._id)]: {
+                                    username: user.username,
+                                    profileImage: user.profileImage
+                                }
+                            }))
+                        ).then(
+                            console.log(comment),
+                            console.log(comment._id),
+                            console.log(userDic[String(comment._id)])
+                        );*/
+                    }
+                    
+                }
+            }
+        };
+
+        fetchUsers();
+    }, [comments]);
 
     const sortComment = () => {
         headComment = [];
@@ -64,19 +99,20 @@ const CommentCard = ({event, commentState, setCommentState }) => {
                     shadow = {"md"}
                     border={"black"}
                 >
-                    {curId = head.userId}
                     <HStack>
                         <VStack>
                         {/*Display user info*/}
-                            <Image 
-                                src={user.profileImage} 
-                                shadow={"md"} 
-                                border="black"
-                                borderRadius={"full"} 
-                                boxSize={"70px"}
-                                objectFit={"cover"}
-                                alignSelf={"flex-start"}
-                            />
+                            {userDic[String(head._id)] && (
+                                <Image
+                                    src={userDic[String(head._id)].profileImage} 
+                                    shadow={"md"} 
+                                    border="black"
+                                    borderRadius={"full"} 
+                                    boxSize={"70px"}
+                                    objectFit={"cover"}
+                                    alignSelf={"flex-start"}
+                                />
+                            )} 
                         </VStack>
                         <VStack
                             w={"full"}
@@ -92,7 +128,9 @@ const CommentCard = ({event, commentState, setCommentState }) => {
                                 whiteSpace={"pre-line"}
                                 alignSelf={"flex-start"}
                             >
-                                {user.username + ":"}
+                                {userDic[String(head._id)] && (
+                                    userDic[String(head._id)].username + ":"
+                                )}
                             </Text>
                             <Text
                                 fontSize={"md"}

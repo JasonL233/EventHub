@@ -28,11 +28,12 @@ const Reply = ({event, isDialogOpen, setIsDialogOpen, commentState, setCommentSt
   }, [isDialogOpen, setIsDialogOpen]);
 
   const handlePost = async () => {
+    console.log(target._id);
       // if user login then upload comment
       if (user) {
           // if user didn't upload empty comment
-          if (userComment !== "") {
-              const {success, message} = await replyComment(event._id, user._id, userComment, target);
+          if (userComment !== "" && target) {
+              const {success, message} = await replyComment(event._id, user._id, userComment, target._id);
 
               // if failing upload comment 
               if (!success) {
@@ -67,6 +68,7 @@ const Reply = ({event, isDialogOpen, setIsDialogOpen, commentState, setCommentSt
         <DialogContent>
           <DialogHeader>
             <DialogTitle>
+              {target && console.log(target._id)}
               <Text
                 fontSize={"xl"}
                 fontWeight={"bold"}

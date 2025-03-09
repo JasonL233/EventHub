@@ -34,7 +34,6 @@ const CommentDetail = ({ isDialogOpen, setIsDialogOpen, comment, replies, userDi
 
     return (
         <Portal>
-            {console.log(comment._id)}
             <DialogRoot ref={dialogRef} placement={"center"} open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                 <DialogContent>
                     <Button

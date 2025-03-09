@@ -87,8 +87,7 @@ const CommentCard = ({event, commentState, setCommentState }) => {
         }
     };
 
-    const handleReply = async (e, head) => {
-        e.stopPropagation();
+    const handleReply = async (head) => {
         setClicked(true);
         if (currUser) {
             setTargetComment(head);
@@ -103,8 +102,9 @@ const CommentCard = ({event, commentState, setCommentState }) => {
     };
 
     const handleBox = async (head) => {
-        if (clicked) {
+        if (clicked || isDialogOpen) {
             setClicked(false);
+            setCommentDetail(false);
         } else {
             setTargetComment(head);
             setCommentDetail(true);
@@ -184,15 +184,13 @@ const CommentCard = ({event, commentState, setCommentState }) => {
                                     color: 'white',
                                     alignSelf: 'end'
                                     }}
-                                onClick={(e, head) => handleReply(e, head)}
+                                onClick={() => handleReply(head)}
                                 rounded={"lg"}
                             >
                                 Reply
                             </Button>
-                            {!showDetail && <CommentDetail isDialogOpen={commentDetail} setIsDialogOpen={() => setCommentDetail(false)} comment={targetComment} replies={childComment} userDict={userDic}  />}
-                            {!showDetail == commentDetail && (showDetail = true)}
-                            {!dialogOpen && <Reply event={event} isDialogOpen={isDialogOpen} setIsDialogOpen={() => setIsDialogOpen(false)} commentState={commentState} setCommentState={setCommentState} target={targetComment}/>}
-                            {!dialogOpen == isDialogOpen && (dialogOpen = true)}
+                            {head == targetComment && <CommentDetail isDialogOpen={commentDetail} setIsDialogOpen={() => setCommentDetail(false)} comment={targetComment} replies={childComment} userDict={userDic}  />}
+                            {head == targetComment && <Reply event={event} isDialogOpen={isDialogOpen} setIsDialogOpen={() => setIsDialogOpen(false)} commentState={commentState} setCommentState={setCommentState} target={targetComment}/>}
                         </VStack>
                         
                     </HStack>

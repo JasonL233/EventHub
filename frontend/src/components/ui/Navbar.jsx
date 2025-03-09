@@ -1,5 +1,5 @@
 import React from 'react'
-import {NativeSelect, Button, Input, HStack, Field, Flex,} from "@chakra-ui/react";
+import {NativeSelect, Button, Input, HStack, Box, Flex, } from "@chakra-ui/react";
 import { CiSearch } from "react-icons/ci";
 import { useState , useEffect} from 'react';
 import { Link } from "react-router-dom";
@@ -45,8 +45,8 @@ const Navbar = () => {
   }
 
   return (
-    <Flex align="center" justify="center">
-      <HStack h="150px" w="1000px" align="center" justify="center" mt="-20px">
+    <Flex align="center" justify="center" alignItems="center">
+      <HStack w="80%" align="center" justify="center">
         <NativeSelect.Root w="150px" variant="filled">
             <NativeSelect.Field color="black" onChange={(e) => setSearchType(e.target.value)}>
               <option value="Event Title">Event Title</option>

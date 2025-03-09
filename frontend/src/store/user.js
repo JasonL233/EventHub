@@ -12,6 +12,7 @@ export const useUserStore = create(
 
     setUsers: (users) => set({ users }),
     setCurrentUser: (user) => set({ curr_user: user, isLoggedIn: !!user }),
+    
 
     updateUserProfile: async(user_id, newUser, newProfile) => {
       const res = await fetch(`/api/users/${user_id}/profile`, {

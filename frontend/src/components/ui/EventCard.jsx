@@ -39,7 +39,7 @@ const EventCard = ({event, user}) => {
   }
 
   return (
-    <Box rounded='lg' overflow='hidden' transition='all 0.3s' _hover={{ transform: "translateY(-5px)", shadow: "x1"}} m={5} maxW="400px" w="full">
+    <Box rounded='lg' overflow='hidden' transition='all 0.3s' _hover={{ transform: "translateY(-5px)", shadow: "x1"}} m={1} maxW="400px" w="full">
         <EventButton id = {event._id} mediaSrc = {event.mediaUrl} eventTitle = {event.title} isImage = {event.eventType === "image"}/>
         <Box p={4}>
             <Heading as='h3' size='md' mb={2} color="black">
@@ -48,8 +48,8 @@ const EventCard = ({event, user}) => {
 
             <HStack spacing={2} justifyContent="space-between" w="full">
                 <HStack>
-                  <Image src={findProfileImage(users, event.publisherId)} boxSize="25px" objectFit="cover" m={0} p={0} />
-                  <Text color="black">{findUsername(users, event.publisherId)}</Text>
+                  <Image src={event.publisherId?.profileImage || ""} boxSize="25px" objectFit="cover" m={0} p={0} />
+                  <Text color="black">{event.publisherId?.username || "Unkonwn user"}</Text>
                 </HStack>
                 
                 <HStack spacing={2}>

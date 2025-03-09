@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { Link } from "react-router-dom";
 import { Box, Heading, HStack, Image, Text } from '@chakra-ui/react';
 import LikeButton from './LikeButton';
 import { useEventStore } from '../../store/event';
@@ -49,7 +50,12 @@ const EventCard = ({event, user}) => {
             <HStack spacing={2} justifyContent="space-between" w="full">
                 <HStack>
                   <Image src={findProfileImage(users, event.publisherId)} boxSize="25px" objectFit="cover" m={0} p={0} />
-                  <Text color="black">{findUsername(users, event.publisherId)}</Text>
+                  {/* Add the click to jump */}
+                  <Link to={`/profile/${event.publisherId}`}>
+                    <Text color="blue.500" cursor="pointer" _hover={{ textDecoration: "underline" }}>
+                      {findUsername(users, event.publisherId)}
+                    </Text>
+                  </Link>
                 </HStack>
                 
                 <HStack spacing={2}>

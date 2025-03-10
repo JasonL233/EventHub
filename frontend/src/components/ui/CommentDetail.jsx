@@ -1,78 +1,71 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { Button, Textarea, Box, Text, Portal, VStack, HStack, Image } from '@chakra-ui/react';
+import { Button, Textarea, Box, Text, Portal, VStack, HStack, Image, Spacer } from '@chakra-ui/react';
 import { DialogBody, DialogCloseTrigger, DialogContent, DialogFooter, DialogHeader, DialogRoot, DialogTitle, DialogTrigger } from "./dialog"
-import Reply from './Reply';
 import { useUserStore } from '../../store/user';
 import { RxCross1 } from "react-icons/rx";
 
-const CommentDetail = ({ isDialogOpen, setIsDialogOpen, comment, replies, userDict, }) => {
+const CommentDetail = ({ isOpen, setIsOpen, comment, replies, userDict, setCommentState }) => {
     const bgColor = "gray.150";
     const currUser = useUserStore((state) => state.curr_user); // current user
     const dialogRef = useRef(null);
+    const [close, setClose] = useState(!isOpen);
 
     useEffect(() => {
-        const handleClickOutside = (event) => {
-            if (dialogRef.current && !dialogRef.current.contains(event.target)) {
-                setIsDialogOpen(false);
+        if (close) {
+            setIsOpen(false);
+        } else {
+            const handleClickOutside = (event) => {
+                if (dialogRef.current && !dialogRef.current.contains(event.target)) {
+                    setIsOpen(false);
+                }
             }
+            document.addEventListener("mousedown", handleClickOutside);
+            return () => {
+                document.removeEventListener("mousedown", handleClickOutside);
+            };
         }
-        document.addEventListener("mousedown", handleClickOutside);
-        return () => {
-            document.removeEventListener("mousedown", handleClickOutside);
-        };
-    }, [isDialogOpen, setIsDialogOpen]);
+        
+    }, [isOpen, setIsOpen, close]);
 
-    const handlePost = () => {
-
-    };
 
     const handleAvatarClick = () => {
 
     };
 
-    if (!isDialogOpen) return null;
+
+    if (!isOpen) return null;
 
     return (
         <Portal>
-            <DialogRoot ref={dialogRef} placement={"center"} open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogRoot ref={dialogRef} placement={"center"} open={isOpen} onOpenChange={setIsOpen}>
                 <DialogContent>
-                    <Button
-                        style={{ 
-                            border: 'black', 
-                            cursor: 'pointer',
-                            fontSize: '24px',
-                            alignSelf: 'end',
-                            backgroundColor: 'transparent'
-                        }}
-                        onClick={() => setIsDialogOpen(false)}
-                    >
-                        <RxCross1 
+                    <HStack p={4}>
+                        <Text
+                            fontSize={"xl"}
+                            fontWeight={"bold"}
+                            bgClip={"text"}
+                            textAlign={"left"}
+                            color={"black"}
+                            whiteSpace={"pre-line"}
+                            alignSelf={"flex-start"}
+                        >
+                            Comment Details
+                        </Text>
+                        <Spacer/>
+                        <RxCross1
                             style={{ 
                                 border: 'black', 
                                 cursor: 'pointer',
                                 fontSize: '24px',
                                 color: 'black',
                                 alignSelf: 'end',
-                                scale: 2
+                                objectFit: 'cover',
+                                scale: 2,
+                                padding: 4
                             }}
+                            onClick={() => setClose(true)}
                         />
-                    </Button>
-                    <DialogHeader>
-                        <DialogTitle>
-                            <Text
-                                fontSize={"xl"}
-                                fontWeight={"bold"}
-                                bgClip={"text"}
-                                textAlign={"left"}
-                                color={"black"}
-                                whiteSpace={"pre-line"}
-                                alignSelf={"flex-start"}
-                            >
-                                Comment Details
-                            </Text>
-                        </DialogTitle>
-                    </DialogHeader>
-                    
+                    </HStack>
                     <DialogBody>
                         <VStack>
                             <Box
@@ -122,6 +115,7 @@ const CommentDetail = ({ isDialogOpen, setIsDialogOpen, comment, replies, userDi
                                             color={"black"}
                                             whiteSpace={"pre-line"}
                                             alignSelf={"flex-start"}
+                                            maxW={'80%'}
                                         >
                                             {comment.comment}
                                         </Text>
@@ -131,12 +125,13 @@ const CommentDetail = ({ isDialogOpen, setIsDialogOpen, comment, replies, userDi
                             {replies[String(comment._id)].map((head) => (
                                 <Box
                                     key = {head._id}
-                                    w = {"full"} 
+                                    w = {"80%"} 
                                     bg = {bgColor} 
                                     p = {6} 
                                     rounded = {"lg"} 
                                     shadow = {"md"}
                                     border={"black"}
+                                    alignSelf={"end"}
                                     _hover={{
                                         backgroundColor: 'gray.200'
                                     }}
@@ -164,6 +159,7 @@ const CommentDetail = ({ isDialogOpen, setIsDialogOpen, comment, replies, userDi
                                                 color={"black"}
                                                 whiteSpace={"pre-line"}
                                                 alignSelf={"flex-start"}
+                                                maxW={'80%'}
                                             >
                                                 {userDict[String(head._id)] && (userDict[String(head._id)].username + ":")}
                                             </Text>
@@ -175,6 +171,7 @@ const CommentDetail = ({ isDialogOpen, setIsDialogOpen, comment, replies, userDi
                                                 color={"black"}
                                                 whiteSpace={"pre-line"}
                                                 alignSelf={"flex-start"}
+                                                maxW={'80%'}
                                             >
                                                 {head.comment}
                                             </Text>

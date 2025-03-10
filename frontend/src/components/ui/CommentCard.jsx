@@ -3,6 +3,7 @@ import { HStack, VStack, Box, Button, Textarea, Spacer, Text, Image, Portal } fr
 import { useUserStore } from '../../store/user';
 import { useEventStore } from '../../store/event';
 import { useDialogStore } from '../../store/dialog';
+import { SiDialogflow } from "react-icons/si";
 import Reply from './Reply';
 import CommentDetail from './CommentDetail';
 
@@ -18,22 +19,22 @@ const CommentCard = ({event, commentState, setCommentState }) => {
     const [commentDetail, setCommentDetail] = useState(false);
     const [clicked, setClicked] = useState(false);
     const [targetComment, setTargetComment] = useState();
+    const [showMore, setShowMore] = useState(false);
 
     let headComment = [];
     let childComment = {};
     const [userDic, setUserDic] = useState({});
-    let dialogOpen = false;
-    let showDetail = false;
     let curId = "";
     
     useEffect(() => {
         if (event._id != null) {
             fetchComments(event._id);
         }
+        
         setCommentDetail(false);
         setIsDialogOpen(false);
         setCommentState(false);
-    }, [curId, event.comments, commentState, fetchComments, fetchUser]);
+    }, [curId, event.comments, commentState, fetchComments, fetchUser ]);
 
     useEffect(() => {
         const fetchUsers = async () => {
@@ -87,28 +88,33 @@ const CommentCard = ({event, commentState, setCommentState }) => {
         }
     };
 
-    const handleReply = async (head) => {
-        setClicked(true);
+    const handleReply = async (event, head) => {
+        event.stopPropagation();
         if (currUser) {
             setTargetComment(head);
+            setCommentDetail(false);
             setIsDialogOpen(true);
         } else {
             openLogin();
         }
     };
 
-    const handleAvatarClick = () => {
-        
+    const handleAvatarClick = (event, userId) => {
+        setClicked(true);
+        event.stopPropagation();
     };
 
-    const handleBox = async (head) => {
+    const handleBox = (head) => {
+        console.log('Box: ' + clicked)
         if (clicked || isDialogOpen) {
             setClicked(false);
-            setCommentDetail(false);
+            return;
         } else {
             setTargetComment(head);
             setCommentDetail(true);
+            setShowMore(true);
         }
+        console.log('Cooment: ' + commentDetail)
     };
 
     return (
@@ -140,7 +146,7 @@ const CommentCard = ({event, commentState, setCommentState }) => {
                                 boxSize={"70px"}
                                 objectFit={"cover"}
                                 alignSelf={"flex-start"}
-                                onClick={handleAvatarClick}
+                                onClick={(e) => handleAvatarClick(e, head.userId)}
                             />
                         )}
                         <VStack
@@ -159,6 +165,7 @@ const CommentCard = ({event, commentState, setCommentState }) => {
                                         color={"black"}
                                         whiteSpace={"pre-line"}
                                         alignSelf={"flex-start"}
+                                        maxW={'80%'}
                                     >
                                         {userDic[String(head._id)] && (
                                             userDic[String(head._id)].username + ":"
@@ -171,30 +178,39 @@ const CommentCard = ({event, commentState, setCommentState }) => {
                                         color={"black"}
                                         whiteSpace={"pre-line"}
                                         alignSelf={"flex-start"}
+                                        maxW={'80%'}
                                     >
                                         {head.comment}
                                     </Text>
                             </VStack>
-                            <Button
-                                style={{ 
-                                    border: 'black', 
-                                    background: 'black', 
-                                    cursor: 'pointer',
-                                    fontSize: '24px',
-                                    color: 'white',
-                                    alignSelf: 'end'
-                                    }}
-                                onClick={() => handleReply(head)}
-                                rounded={"lg"}
-                            >
-                                Reply
-                            </Button>
-                            {head == targetComment && <CommentDetail isDialogOpen={commentDetail} setIsDialogOpen={() => setCommentDetail(false)} comment={targetComment} replies={childComment} userDict={userDic}  />}
-                            {head == targetComment && <Reply event={event} isDialogOpen={isDialogOpen} setIsDialogOpen={() => setIsDialogOpen(false)} commentState={commentState} setCommentState={setCommentState} target={targetComment}/>}
+                            
                         </VStack>
                         
                     </HStack>
-                    
+                    <HStack width={'100%'} alignSelf={'flex-end'}>
+                        <Spacer/>
+                        <SiDialogflow />
+                        <Text>
+                            {childComment[head._id].length}
+                        </Text>
+                        <Button
+                            style={{ 
+                                border: 'black', 
+                                background: 'black', 
+                                cursor: 'pointer',
+                                fontSize: '24px',
+                                color: 'white',
+                                alignSelf: 'end'
+                                }}
+                            onClick={(e) => handleReply(e, head)}
+                            rounded={"lg"}
+                        >
+                            Reply
+                        </Button>
+                        {console.log("Infront: "+commentDetail)}
+                        {head == targetComment && <CommentDetail isOpen={commentDetail} setIsOpen={() => setCommentDetail(false)} comment={targetComment} replies={childComment} userDict={userDic} setCommentState={setCommentState} />}
+                        {head == targetComment && <Reply event={event} isDialogOpen={isDialogOpen} setIsDialogOpen={() => setIsDialogOpen(false)} commentState={commentState} setCommentState={setCommentState} target={targetComment}/>}
+                    </HStack>
                 </Box>
             ))}
             

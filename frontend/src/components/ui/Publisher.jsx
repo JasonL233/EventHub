@@ -13,12 +13,23 @@ const Publisher = ({ event }) => {
     const openLogin = useDialogStore((state) => state.openLogin);
     // Folow
     const {updateFollowing} = useUserStore();
+    // Loading state
+    const [loading, setLoading] = useState(true);
 
 
     useEffect(() => {
-        fetchUser(event.publisherId);
-        setPublisher(user);
+        if (fetchUser(event.publisherId)) {
+            setPublisher(user);
+            setLoading(false);
+        }
     }, [fetchUser, event, user]);
+
+    useEffect(() => {
+        return () => {
+            setPublisher(null);
+            setLoading(true);
+        };
+      }, []);
 
     const handleFollow = () => {
         if (curUser) {
@@ -35,6 +46,10 @@ const Publisher = ({ event }) => {
             openLogin();
         }
     }
+
+    if (loading) return(
+        <HStack w={'full'}></HStack>
+    );
 
     return (
         <HStack w={'full'}>

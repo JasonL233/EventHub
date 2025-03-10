@@ -27,6 +27,13 @@ const PostPage = () => {
     fetchEvent(id).then(setLoading(false));
   }, [curUser, fetchEvent]);
 
+  useEffect(() => {
+    return () => {
+      console.log("in");
+        setLoading(true);
+    };
+  }, []);
+
   if (loading) return ;
 
   return (

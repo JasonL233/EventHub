@@ -15,12 +15,16 @@ export const useUserStore = create(
     
 
     fetchUser: async(user_id) => {
-      const respond = await fetch(`/api/users/${user_id}`);
-      const data = await respond.json();
-      if(data.success){
-        return data.data;
+      if (user_id) {
+        const respond = await fetch(`/api/users/${user_id}`, { cache: "no-store" });
+        const data = await respond.json();
+        set({ user: data.data });
+        if(data.success){
+          return data.data;
+        } else {
+          return null;
+        }
       }
-      return null;
     },
  
 

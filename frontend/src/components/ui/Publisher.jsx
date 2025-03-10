@@ -2,8 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { Text, Image, HStack, Button} from "@chakra-ui/react";
 import { useUserStore } from '../../store/user.js';
 import { useDialogStore } from '../../store/dialog';
+import { useNavigate } from "react-router-dom";
 
 const Publisher = ({ event }) => {
+    // Add React Router navigate function
+    const navigate = useNavigate();
     // Get current user
     const curUser = useUserStore((state) => state.curr_user);
     // Publisher
@@ -61,6 +64,7 @@ const Publisher = ({ event }) => {
                 boxSize={"100px"}
                 objectFit={"cover"}
                 alignSelf={'self-start'}
+                onClick={() => navigate(`/profile/${event.publisherId}`)}
             />
             <Text
                 fontSize={"xl"}

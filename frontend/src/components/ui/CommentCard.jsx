@@ -6,6 +6,7 @@ import { useDialogStore } from '../../store/dialog';
 import { SiDialogflow } from "react-icons/si";
 import Reply from './Reply';
 import CommentDetail from './CommentDetail';
+import { useNavigate } from "react-router-dom";
 
 
 const CommentCard = ({event, commentState, setCommentState }) => {
@@ -13,6 +14,7 @@ const CommentCard = ({event, commentState, setCommentState }) => {
     const currUser = useUserStore((state) => state.curr_user); // current user
     const openLogin = useDialogStore((state) => state.openLogin); // login prompt
     const {fetchComments, comments} = useEventStore(); // Reply other comments
+    const navigate = useNavigate();// Add React Router navigate function
 
     const {fetchUser, user} = useUserStore();
     const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -102,6 +104,7 @@ const CommentCard = ({event, commentState, setCommentState }) => {
     const handleAvatarClick = (event, userId) => {
         setClicked(true);
         event.stopPropagation();
+        navigate(`/profile/${userId}`);
     };
 
     const handleBox = (head) => {

@@ -28,7 +28,6 @@ const Reply = ({event, isDialogOpen, setIsDialogOpen, commentState, setCommentSt
   }, [isDialogOpen, setIsDialogOpen]);
 
   const handlePost = async () => {
-    console.log(target._id);
       // if user login then upload comment
       if (user) {
           // if user didn't upload empty comment
@@ -68,7 +67,6 @@ const Reply = ({event, isDialogOpen, setIsDialogOpen, commentState, setCommentSt
         <DialogContent>
           <DialogHeader>
             <DialogTitle>
-              {target && console.log(target._id)}
               <Text
                 fontSize={"xl"}
                 fontWeight={"bold"}

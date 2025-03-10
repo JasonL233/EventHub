@@ -207,7 +207,7 @@ const CommentCard = ({event, commentState, setCommentState }) => {
                         >
                             Reply
                         </Button>
-                        {console.log("Infront: "+commentDetail)}
+                        {/*console.log("Infront: "+commentDetail)*/}
                         {head == targetComment && <CommentDetail isOpen={commentDetail} setIsOpen={() => setCommentDetail(false)} comment={targetComment} replies={childComment} userDict={userDic} setCommentState={setCommentState} />}
                         {head == targetComment && <Reply event={event} isDialogOpen={isDialogOpen} setIsDialogOpen={() => setIsDialogOpen(false)} commentState={commentState} setCommentState={setCommentState} target={targetComment}/>}
                     </HStack>

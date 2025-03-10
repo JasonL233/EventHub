@@ -40,16 +40,18 @@ const ProfilePage = () => {
   }, [curr_user]); // Ensures when curr_user changes, update the data
 
   useEffect(() => {
-    if (curr_user && events.length > 0) {
+    if (curr_user && events.length > 0){
+
       // Upadate liked events in real-time
-      setLikedevents(events.filter(event => curr_user.likedPosts.includes(event._id)));
+      setLikedevents(events.filter(event => curr_user?.likedPosts?.includes(event._id)));
 
       // If the user is an event organizer, update their posted events
       if (curr_user.isEventOrganizer) {
-        setOrganizerPosts(events.filter(event => event.publisherId === curr_user._id));
+        setOrganizerPosts(events.filter(event => String(event.publisherId?._id) === String(curr_user._id)));
       }
     }
-  }, [curr_user?.likedPosts, events]);  // Depend on likedPosts and events to ensure real-time updates
+  }, [curr_user, events]);  // Depend on likedPosts and events to ensure real-time updates
+
 
   {/* If currUser exists, directly get currUser.isEventOrganizer.
       If currUser is empty (not logged in), 

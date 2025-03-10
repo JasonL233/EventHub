@@ -1,10 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { Box, Text, Portal, VStack, HStack, Image, Spacer } from '@chakra-ui/react';
 import { DialogBody, DialogCloseTrigger, DialogContent, DialogFooter, DialogRoot, DialogTitle, DialogTrigger } from "./dialog"
+import { useNavigate } from "react-router-dom";
+
 
 const CommentDetail = ({ isOpen, setIsOpen, comment, replies, userDict, setCommentState }) => {
     const bgColor = "gray.150";
     const dialogRef = useRef(null);
+    const navigate = useNavigate();// Add React Router navigate function
 
     useEffect(() => {
         const handleClickOutside = (event) => {
@@ -76,7 +79,7 @@ const CommentDetail = ({ isOpen, setIsOpen, comment, replies, userDict, setComme
                                             boxSize={"70px"}
                                             objectFit={"cover"}
                                             alignSelf={"flex-start"}
-                                            onClick={handleAvatarClick}
+                                            onClick={() => navigate(`/profile/${comment.userId}`)}
                                         />
                                     )}
                                     <VStack w={"full"} color={"gray.300"}>
@@ -133,7 +136,7 @@ const CommentDetail = ({ isOpen, setIsOpen, comment, replies, userDict, setComme
                                                 boxSize={"70px"}
                                                 objectFit={"cover"}
                                                 alignSelf={"flex-start"}
-                                                onClick={handleAvatarClick}
+                                                onClick={() => navigate(`/profile/${head.userId}`)}
                                             />
                                         )}
                                         <VStack w={"full"} color={"gray.300"}>

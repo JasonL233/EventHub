@@ -4,6 +4,7 @@ import { useUserStore } from '../../store/user';
 import { useEventStore } from '../../store/event';
 import { useDialogStore } from '../../store/dialog';
 import { toaster } from "./toaster";
+import { useNavigate } from "react-router-dom";
 
 
 const LeaveCommentChart = ({event, commentState, setCommentState}) => {
@@ -14,7 +15,8 @@ const LeaveCommentChart = ({event, commentState, setCommentState}) => {
     const promptMessage = "Post your comment"; // Message displayed in comment prompt
     const [userComment, setUserComment] = useState(""); // store user's current comment
     const [isPost, setIsPost] = useState(false); // Check if user post comment
-
+    // Add React Router navigate function
+    const navigate = useNavigate();
 
     const handlePost = async () => {
         // if user login then upload comment
@@ -62,6 +64,7 @@ const LeaveCommentChart = ({event, commentState, setCommentState}) => {
                     boxSize={"100px"}
                     objectFit={"cover"}
                     alignSelf={"flex-start"}
+                    onClick={() => navigate(`/profile/${user._id}`)}
                 />
             )}
 

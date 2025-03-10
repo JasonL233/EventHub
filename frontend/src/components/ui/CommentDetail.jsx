@@ -1,31 +1,23 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { Button, Textarea, Box, Text, Portal, VStack, HStack, Image, Spacer } from '@chakra-ui/react';
-import { DialogBody, DialogCloseTrigger, DialogContent, DialogFooter, DialogHeader, DialogRoot, DialogTitle, DialogTrigger } from "./dialog"
-import { useUserStore } from '../../store/user';
-import { RxCross1 } from "react-icons/rx";
+import { Box, Text, Portal, VStack, HStack, Image, Spacer } from '@chakra-ui/react';
+import { DialogBody, DialogCloseTrigger, DialogContent, DialogFooter, DialogRoot, DialogTitle, DialogTrigger } from "./dialog"
 
 const CommentDetail = ({ isOpen, setIsOpen, comment, replies, userDict, setCommentState }) => {
     const bgColor = "gray.150";
-    const currUser = useUserStore((state) => state.curr_user); // current user
     const dialogRef = useRef(null);
-    const [close, setClose] = useState(!isOpen);
 
     useEffect(() => {
-        if (close) {
-            setIsOpen(false);
-        } else {
-            const handleClickOutside = (event) => {
-                if (dialogRef.current && !dialogRef.current.contains(event.target)) {
-                    setIsOpen(false);
-                }
+        const handleClickOutside = (event) => {
+            if (dialogRef.current && !dialogRef.current.contains(event.target)) {
+                setIsOpen(false);
             }
-            document.addEventListener("mousedown", handleClickOutside);
-            return () => {
-                document.removeEventListener("mousedown", handleClickOutside);
-            };
         }
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
         
-    }, [isOpen, setIsOpen, close]);
+    }, [isOpen, setIsOpen]);
 
 
     const handleAvatarClick = () => {
@@ -52,18 +44,12 @@ const CommentDetail = ({ isOpen, setIsOpen, comment, replies, userDict, setComme
                             Comment Details
                         </Text>
                         <Spacer/>
-                        <RxCross1
-                            style={{ 
-                                border: 'black', 
-                                cursor: 'pointer',
-                                fontSize: '24px',
-                                color: 'black',
-                                alignSelf: 'end',
-                                objectFit: 'cover',
+                        <DialogCloseTrigger
+                            style={{
                                 scale: 2,
-                                padding: 4
+                                border: 'transparent',
+                                backgroundColor: 'transparent'
                             }}
-                            onClick={() => setClose(true)}
                         />
                     </HStack>
                     <DialogBody>

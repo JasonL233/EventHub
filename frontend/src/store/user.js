@@ -15,9 +15,11 @@ export const useUserStore = create(
     
 
     fetchUser: async(user_id) => {
-      const respond = await fetch(`/api/users/${user_id}`);
-      const data = await respond.json();
-      set({ user: data.data });
+      if (user_id) {
+        const respond = await fetch(`/api/users/${user_id}`);
+        const data = await respond.json();
+        set({ user: data.data });
+      }
     },
 
     updateUserProfile: async(user_id, newUser, newProfile) => {

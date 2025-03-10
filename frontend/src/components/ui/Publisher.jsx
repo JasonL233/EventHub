@@ -27,13 +27,6 @@ const Publisher = ({ event }) => {
         }
     }, [fetchUser, event, user]);
 
-    useEffect(() => {
-        return () => {
-            setPublisher(null);
-            setLoading(true);
-        };
-      }, []);
-
     const handleFollow = () => {
         if (curUser) {
             updateFollowing(curUser._id, publisher._id, true);

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Box, Heading, HStack, Image, Text } from '@chakra-ui/react';
 import LikeButton from './LikeButton';
 import { useEventStore } from '../../store/event';
@@ -8,6 +8,8 @@ import { useUserStore } from '../../store/user';
 import EventButton from './EventButton';
 
 const EventCard = ({event, user}) => {
+  const navigate = useNavigate();   // Add React Router navigate function
+
   // console.log(user);
   const {updateLikes} = useEventStore();
   const {updateLikedPost} = useUserStore();
@@ -50,8 +52,30 @@ const EventCard = ({event, user}) => {
 
             <HStack spacing={2} justifyContent="space-between" w="full">
                 <HStack>
-                <Image src={event.publisherId?.profileImage || null} boxSize="25px" objectFit="cover" m={0} p={0} />
-                <Text color="black">{event.publisherId?.username || "Unkonwn user"}</Text>
+                  {/* Add an onClick event to redirect to the Profile Page when clicking on the avatar */}
+                  <Image 
+                    src={event.publisherId?.profileImage || null} 
+                    boxSize="25px" 
+                    objectFit="cover" 
+                    m={0} 
+                    p={0}
+                    cursor="pointer"
+                    onClick={() => navigate(`/profile/${event.publisherId?._id}`)}
+                  />
+
+                  {/* Add an onClick event to redirect to the Profile Page when a user clicks on the user name */}
+                  <Text 
+                    color="black"
+                    cursor="pointer"
+                    _hover={{
+                      color: "blue.500",
+                      textDecoration: "underline",
+                      cursor: "pointer",
+                    }}
+                    onClick={() => navigate(`/profile/${event.publisherId?._id}`)}
+                  >
+                    {event.publisherId?.username || "Unkonwn user"}
+                  </Text>
                   
                 </HStack>
                 

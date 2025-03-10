@@ -1,13 +1,16 @@
 import React, { useEffect, useState } from 'react'
 import { useUserStore } from '../store/user';
 import { useEventStore } from '../store/event';
+import { useParams } from 'react-router-dom';
 import { Box, Container, Heading, Image, Text, VStack, Grid, GridItem, Button, Input} from "@chakra-ui/react";
 import EventCard from "../components/ui/EventCard"; // Ensures EventCard components has been imported
 
 const ProfilePage = () => {
+  const { id } = useParams();   // Get the ID from URL
   const curr_user = useUserStore((state) => state.curr_user);
   const {events, fetchEvents} = useEventStore();
 
+  const [profileUser, setProfileUser] = useState(null);
   // State to store liked events and posted events (for event organizers)
   const [likedevents, setLikedevents] = useState([]);
   const [organizerPosts, setOrganizerPosts] = useState([]); 
@@ -18,11 +21,34 @@ const ProfilePage = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [newUsername, setNewUsername] = useState(curr_user?.username || "");
   const [newProfileImage, setNewProfileImage] = useState(curr_user?.profileImage || "https://static.thenounproject.com/png/5034901-200.png");
-  const { updateUserProfile } = useUserStore();
+  const { fetchUser, updateUserProfile  } = useUserStore();
+
+  let isMyProfile = false;
+  if(!id || id === curr_user?._id){
+    isMyProfile = true;
+  }
+
+  // Pull the user info. we want to access
+  useEffect(() => {
+    if(isMyProfile){
+      setProfileUser(curr_user);
+    }else{
+      const fetchUserProfile = async() => {
+        const user = await fetchUser(id);  // Fetch other user's profile
+        setProfileUser(user);
+      };
+      fetchUserProfile();
+    }
+  }, [id, curr_user]);
 
   // Handle update
   const Updatename_profile = async() => {
-    await updateUserProfile(curr_user._id, newUsername, newProfileImage);
+    if(!isMyProfile) return;  // Prevent updating other users
+
+    const updateUserInfo = await updateUserProfile(profileUser._id, newUsername, newProfileImage);
+    if(updateUserInfo){
+      setProfileUser(updateUserInfo);  // Ensure UI reflects changes
+    }
     setIsEditing(false);    // Exist editing model
   };
 
@@ -34,23 +60,28 @@ const ProfilePage = () => {
   }, [curr_user?.following, curr_user?.followers]);    // Listen to `following` and `followers` changes
   
   useEffect(() => {
-    if (curr_user) {
+    if (profileUser) {
+      setNewUsername(profileUser.username);
+      setNewProfileImage(profileUser.profileImage);
       fetchEvents(); // Ensure all event data is fetched
     }
-  }, [curr_user]); // Ensures when curr_user changes, update the data
+  }, [profileUser, fetchEvents]); // Ensures when curr_user changes, update the data
 
   useEffect(() => {
-    if (curr_user && events.length > 0){
+    if (profileUser && events.length > 0){
 
       // Upadate liked events in real-time
-      setLikedevents(events.filter(event => curr_user?.likedPosts?.includes(event._id)));
+      setLikedevents(events.filter(event => profileUser?.likedPosts?.includes(event._id)));
 
       // If the user is an event organizer, update their posted events
-      if (curr_user.isEventOrganizer) {
-        setOrganizerPosts(events.filter(event => String(event.publisherId?._id) === String(curr_user._id)));
+      if (profileUser.isEventOrganizer) {
+        setOrganizerPosts(events.filter(event => String(event.publisherId?._id) === String(profileUser._id)));
       }
     }
-  }, [curr_user, events]);  // Depend on likedPosts and events to ensure real-time updates
+  }, [profileUser, events]);  // Depend on likedPosts and events to ensure real-time updates
+
+  if(!profileUser)
+    return <p>Loading...</p>;   // Prevents null errors
 
 
   {/* If currUser exists, directly get currUser.isEventOrganizer.
@@ -75,24 +106,26 @@ const ProfilePage = () => {
               <Image
                 borderRadius="full"
                 boxSize="200px"
-                src={newProfileImage || curr_user.profileImage}
+                src={newProfileImage || profileUser?.profileImage}
                 alt="User Avatar"
                 onClick={() => {
-                  const imageURL = prompt("Please enter a new profile image URL: ");
-                  if (imageURL){
-                    setNewProfileImage(imageURL);
+                  if(isMyProfile){
+                    const imageURL = prompt("Please enter a new profile image URL: ");
+                    if (imageURL){
+                      setNewProfileImage(imageURL);
+                    }
                   }
                 }}
-                cursor="pointer"
+                cursor={isMyProfile ? "pointer" : "default"}
               />
             </GridItem>
             <GridItem colSpan={4}>
-            <VStack align="start" width="100%">
-              <Grid templateColumns="repeat(5, auto)" alignItems="center" gap={2}>
-                <GridItem colSpan={4}>
-                  {/* User Name (allow edit) and ID */}
+              <VStack align="start" width="100%">
+                <Grid templateColumns="repeat(5, auto)" alignItems="center" gap={2}>
+                  <GridItem colSpan={4}>
+                    {/* User Name (allow edit) and ID */}
                     {!isEditing ? (
-                      <Heading size="2xl" color="black">{curr_user.username}</Heading>
+                      <Heading size="2xl" color="black">{profileUser?.username}</Heading>
                     ) : (
                       <Input
                         value={newUsername}
@@ -102,23 +135,24 @@ const ProfilePage = () => {
                         color="black"
                       />
                     )}
-                </GridItem>
-                <GridItem>
-                  {!isEditing ? (
-                    <Button onClick={() => setIsEditing(true)}>Edit</Button>
-                  ) : (
-                    <Grid templateColumns="repeat(2, auto)" gap={2}>
-                      <GridItem>
-                        <Button colorScheme="blue" onClick={Updatename_profile}>Save</Button>
-                      </GridItem>
-                      <GridItem>
-                        <Button colorScheme="gray" onClick={() => setIsEditing(false)}>Cancel</Button>
-                      </GridItem>
-                    </Grid>
-                  )}
+                  </GridItem>
+                  <GridItem>
+                    {isMyProfile && !isEditing && (
+                      <Button onClick={() => setIsEditing(true)}>Edit</Button>
+                    )}
+                    {isEditing && (
+                      <Grid templateColumns="repeat(2, auto)" gap={2}>
+                        <GridItem>
+                          <Button colorScheme="blue" onClick={Updatename_profile}>Save</Button>
+                       </GridItem>
+                        <GridItem>
+                          <Button colorScheme="gray" onClick={() => setIsEditing(false)}>Cancel</Button>
+                        </GridItem>
+                      </Grid>
+                    )}
                   </GridItem>
                 </Grid>
-                <Text fontSize="xl" color="black">ID: {curr_user._id}</Text>
+                <Text fontSize="xl" color="black">ID: {profileUser?._id}</Text>
                 <Grid templateColumns="repeat(2, 1fr)" gap={6}>
                   <VStack>
                     <Text fontSize="2xl" fontWeight="bold" color="black">1</Text>
@@ -136,12 +170,12 @@ const ProfilePage = () => {
       {/* Posts/Likes Section */}
       <Box textAlign="center" mt={8}>
         {/* user: Likes; event: Posts */}
-        <Heading size="2xl" color="black">{isEventOrganizer ? "Posts" : "Likes"}</Heading>
+        <Heading size="2xl" color="black">{profileUser?.isEventOrganizer ? "Posts" : "Likes"}</Heading>
         <Box borderBottom="2px solid black" width="100%" my={4} />
       </Box>
 
-       {/* If user is an event organizer, show their posted events with likes */}
-      {isEventOrganizer ? (
+      {/* If user is an event organizer, show their posted events with likes */}
+      {profileUser?.isEventOrganizer ? (
         <Grid templateColumns="repeat(3, 1fr)" gap={4}>
           {organizerPosts.length > 0 ? (
             organizerPosts.map(event => {

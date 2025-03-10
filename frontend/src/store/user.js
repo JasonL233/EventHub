@@ -17,8 +17,12 @@ export const useUserStore = create(
     fetchUser: async(user_id) => {
       const respond = await fetch(`/api/users/${user_id}`);
       const data = await respond.json();
-      set({ user: data.data });
+      if(data.success){
+        return data.data;
+      }
+      return null;
     },
+ 
 
     updateUserProfile: async(user_id, newUser, newProfile) => {
       const res = await fetch(`/api/users/${user_id}/profile`, {
@@ -31,13 +35,13 @@ export const useUserStore = create(
 
       if(data.success){
         set((state) => ({
-          curr_user: {
-            ...state.curr_user,
-            username: newUser || state.curr_user.username,   // Remain the original username
-            profileImage: newProfile || state.curr_user.profileImage,   // Remain the original profile image
-          },
+          curr_user: state.curr_user._id === user_id
+            ? { ...state.curr_user, username: newUser || state.curr_user.username, profileImage: newProfile || state.curr_user.profileImage}   // Remain the original username and the original profile image
+            : state.curr_user
         }));
+        return data.data;   // Return the updated user
       }
+      return null;
     },
 
     createUser: async (newUser) => {

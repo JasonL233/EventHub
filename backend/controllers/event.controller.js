@@ -58,7 +58,9 @@ export const createEvent = async (req, res) => {
       return res.status(400).json({ success: false, message: "Please upload a file" });
     }
 
-    const mediaUrl = `http://localhost:4000/uploads/${req.file.filename}`;
+    const PORT = process.env.PORT || 5000;
+
+    const mediaUrl = "http://localhost:" + PORT + "/uploads/${req.file.filename}";
 
     let parsedTags = [];
     if (tags) {

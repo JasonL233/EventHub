@@ -19,20 +19,17 @@ const Publisher = ({ event }) => {
     // Loading state
     const [loading, setLoading] = useState(true);
 
+    const [follow, setFollow] = useState('following');
+
 
     useEffect(() => {
-        if (fetchUser(event.publisherId)) {
-            setPublisher(user);
-            setLoading(false);
-        }
-    }, [fetchUser, event, user]);
+        fetchUser(event.publisherId);      
+    }, [fetchUser, event]);
 
     useEffect(() => {
-        return () => {
-            setPublisher(null);
-            setLoading(true);
-        };
-      }, []);
+        setPublisher(user);
+        setLoading(false);
+    }, [user])
 
     const handleFollow = () => {
         if (curUser) {
@@ -64,6 +61,7 @@ const Publisher = ({ event }) => {
                 boxSize={"100px"}
                 objectFit={"cover"}
                 alignSelf={'self-start'}
+                cursor={'pointer'}
                 onClick={() => navigate(`/profile/${event.publisherId}`)}
             />
             <Text
@@ -85,14 +83,18 @@ const Publisher = ({ event }) => {
                     fontSize={'26px'}
                     color={'black'}
                     scale={0.8}
+                    onMouseEnter={() => setFollow('• Unfollow')}
+                    onMouseLeave={() => setFollow('• Following')}
                     _hover={{
                         fontSize: 30,
-                        color: 'gray.500'
+                        color: 'gray.500',
+                        backgroundColor: 'gray.300',
+                        transition: "0.1s ease-in-out"
                         }}
                     rounded={"lg"}
                     onClick={handleUnfollow}
                 >
-                    • Following
+                    {follow}
                 </Button>
             ) : (
                 <Button

@@ -1,2 +1,0 @@
-# Go to mongoDB -> overview -> copy connection string; Replace <...> with your connection string
-MONGO_URI=<mongodb+srv://yqiu0120:z99z8aQXLFKRZcFX@cluster0.ply6d.mongodb.net/events?retryWrites=true&w=majority&appName=Cluster0>

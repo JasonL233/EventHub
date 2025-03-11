@@ -30,8 +30,6 @@ router.get("/:id/comments", getComments);
 
 router.put("/:id", updateEvent);
 
-router.delete("/:id", deleteEvent);
-
 router.patch("/:id/like", likeEvent);
 
 router.patch("/:id/comment", addComment);

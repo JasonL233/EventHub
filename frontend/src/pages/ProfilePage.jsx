@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from 'react'
+import React, { act, useEffect, useState } from 'react'
 import { useUserStore } from '../store/user';
 import { useEventStore } from '../store/event';
 import { useParams } from 'react-router-dom';
 import { Box, Container, Heading, Image, Text, VStack, Grid, GridItem, Button, Input} from "@chakra-ui/react";
-import EventCard from "../components/ui/EventCard"; // Ensures EventCard components has been imported
 
 const ProfilePage = () => {
   const { id } = useParams();   // Get the ID from URL
@@ -13,15 +12,22 @@ const ProfilePage = () => {
   const [profileUser, setProfileUser] = useState(null);
   // State to store liked events and posted events (for event organizers)
   const [likedevents, setLikedevents] = useState([]);
-  const [organizerPosts, setOrganizerPosts] = useState([]); 
-
-  const [countOfFollowing, setFollowingcount] = useState(curr_user?.following?.length || 0);
-  const [countOfFollowers, setFollowerscount] = useState(curr_user?.followers?.length || 0);
+  const [organizerPosts, setOrganizerPosts] = useState([]);
+  
+  const [isFollowing, setIsFollowing] = useState(false);
 
   const [isEditing, setIsEditing] = useState(false);
   const [newUsername, setNewUsername] = useState(curr_user?.username || "");
   const [newProfileImage, setNewProfileImage] = useState(curr_user?.profileImage || "https://static.thenounproject.com/png/5034901-200.png");
-  const { fetchUser, updateUserProfile  } = useUserStore();
+  const { fetchUser, updateUserProfile, updateFollowing, updateFollowers} = useUserStore();
+
+  {/* If currUser exists, directly get currUser.isEventOrganizer.
+      If currUser is empty (not logged in), 
+      the default value is false to prevent errors caused by undefined. */}
+  let isEventOrganizer = false;  // Set the isEventOrganizer is false
+  if (curr_user) {
+    isEventOrganizer = Boolean(curr_user.isEventOrganizer);
+  }
 
   let isMyProfile = false;
   if(!id || id === curr_user?._id){
@@ -53,11 +59,48 @@ const ProfilePage = () => {
   };
 
   useEffect(() => {
-    if (curr_user){
-      setFollowingcount(curr_user.following.length);   // Update following counts
-      setFollowerscount(curr_user.followers.length);   // Update followers counts
+    if (profileUser && curr_user){
+      setIsFollowing(curr_user.following.includes(profileUser._id));
     }
-  }, [curr_user?.following, curr_user?.followers]);    // Listen to `following` and `followers` changes
+  }, [curr_user, profileUser]);    // Listen to `following` and `followers` changes
+
+  // Handle follow/unfollow
+  const handleFollow = async() => {
+    if(!curr_user || !profileUser)
+      return;
+
+    const newIsFollowing = !isFollowing; // First calculate the new isFollowing state
+    setIsFollowing(newIsFollowing);
+
+    setProfileUser((pre_ProfileUser) => ({
+      ...pre_ProfileUser,
+      followers: newIsFollowing
+        ? [...(pre_ProfileUser.followers || []), curr_user._id]    // Add followers
+        : (pre_ProfileUser.followers || []).filter((id) => id !== curr_user._id),   // Unfollow
+    }));
+
+    // Update backend
+    await updateFollowing(curr_user._id, profileUser._id, newIsFollowing);
+    const updatedFollowers = await updateFollowers(profileUser._id, curr_user._id, newIsFollowing);
+
+    setProfileUser((pre_ProfileUser) => ({
+      ...pre_ProfileUser,
+      followers: updateFollowers,
+    }));
+
+    if(!curr_user.isEventOrganizer){
+      set((state) => ({
+        curr_user: {
+          ...state.curr_user,
+          following: newIsFollowing
+            ? [...(state.curr_user.following || []), profileUser._id]
+            : (state.curr_user.following || []).filter((id) => id !== profileUser._id),
+        },
+      }));
+    }
+
+      
+  };
   
   useEffect(() => {
     if (profileUser) {
@@ -82,15 +125,6 @@ const ProfilePage = () => {
 
   if(!profileUser)
     return <p>Loading...</p>;   // Prevents null errors
-
-
-  {/* If currUser exists, directly get currUser.isEventOrganizer.
-      If currUser is empty (not logged in), 
-      the default value is false to prevent errors caused by undefined. */}
-  let isEventOrganizer = false;  // Set the isEventOrganizer is false
-  if (curr_user) {
-    isEventOrganizer = Boolean(curr_user.isEventOrganizer);
-  }
 
   
 
@@ -153,14 +187,28 @@ const ProfilePage = () => {
                   </GridItem>
                 </Grid>
                 <Text fontSize="xl" color="black">ID: {profileUser?._id}</Text>
+                {/* The counter of followers and following*/}
                 <Grid templateColumns="repeat(2, 1fr)" gap={6}>
-                  <VStack>
-                    <Text fontSize="2xl" fontWeight="bold" color="black">1</Text>
-                    {/* user: following; event organizer: followers */}
-                    <Text fontSize="lg" color="black">{isEventOrganizer ? "Followers" : "Following"}</Text>
-                  </VStack>
-                  
+                  {profileUser.isEventOrganizer ? (
+                    <VStack>
+                      <Text fontSize="2xl" fontWeight="bold" color="black">{profileUser.followers?.length || 0}</Text>
+                      {/* event organizer: followers */}
+                      <Text fontSize="lg" color="black">Followers</Text>
+                    </VStack>
+                  ) : (
+                    <VStack>
+                      <Text fontSize="2xl" fontWeight="bold" color="black">{profileUser.following?.length || 0}</Text>
+                      {/* user: following */}
+                      <Text fontSize="lg" color="black">Following</Text>
+                    </VStack>
+                  )}
                 </Grid>
+                {/* the follow and unfollow button */}
+                {!isMyProfile && (
+                  <Button colorScheme={isFollowing ? "red" : "blue"} onClick={handleFollow}>
+                    {isFollowing ? "Unfollow" : "Follow"}
+                  </Button>
+                )}
               </VStack>
             </GridItem>
           </Grid>

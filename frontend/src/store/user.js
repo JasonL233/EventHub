@@ -133,75 +133,72 @@ export const useUserStore = create(
 
     // User follows/unfollows other organizers
     updateFollowing: async (user_id, organizer_id, isFollowing) => {
-      const res = await fetch(`/api/users/${user_id}/following`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          action: isFollowing ? "follow" : "unfollow",  // Follow or unfollow
-          organizer_id,   // The ID of the target organizer
-        }),
-      });
-
-      const data = await res.json();
-
-      if(data.success) {
-        set((state) => {
-          let updatedFollowing;
-          if(isFollowing){
-            // When a user follows an organizer, add the organizer's ID
-            updatedFollowing = [...state.curr_user.following, organizer_id];
-          }
-          else{
-            // When a user unfollows, remove the organizer's ID from the following array
-            updatedFollowing = state.curr_user.following.filter((id)=> id !== organizer_id);
-          }
-
-          return {
-            curr_user: {
-              ...state.curr_user,
-              following: updatedFollowing,  // Update the following array
-            },
-          };
+      try{
+        const res = await fetch(`/api/users/${user_id}/following`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            action: isFollowing ? "follow" : "unfollow",  // Follow or unfollow
+            organizer_id,   // The ID of the target organizer
+          }),
         });
+        const data = await res.json();
+        
+        if(data.success) {
+          set((state) => {
+            let updatedFollowing;
+            if(isFollowing){
+              // When a user follows an organizer, add the organizer's ID
+              updatedFollowing = [...state.curr_user.following, organizer_id];
+            }
+            else{
+              // When a user unfollows, remove the organizer's ID from the following array
+              updatedFollowing = state.curr_user.following.filter((id)=> id !== organizer_id);
+            }
+
+            return {
+              curr_user: {
+                ...state.curr_user,
+                following: updatedFollowing,  // Update the following array
+              },
+            };
+          });
+        }
+      }catch(error){
+        console.error("Udate following is error:", error);
       }
     },
 
     // Update the number of followers of `event organizer`
     updateFollowers: async (organizer_id, user_id, isFollowing) =>{
-      const res = await fetch( `/api/users/${organizer_id}/followers`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          action: isFollowing ? "follow" : "unfollow",   // Follow or unfollow
-          user_id,  // Follower's ID
-        }),
-      });
-
-      const data = await res.json();
-
-      if(data.success){
-        set((state) => {
-          let updatedFollowers;
-          if(isFollowing) {
-            // When a user follows the organizer, add user_id to followers
-            updatedFollowers = [...state.curr_user.followers, user_id];
-          }
-          else{
-            // When a user unfollows the organizer, remove the user_id from the followers array
-            updatedFollowers = state.curr_user.followers.filter((id) => id !== user_id);
-          }
-
-          return {
-            curr_user: {
-              ...state.curr_user,
-              followers: updatedFollowers,   // Update the followers array
-            },
-          };
+      try{
+        const res = await fetch( `/api/users/${organizer_id}/followers`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            action: isFollowing ? "follow" : "unfollow",   // Follow or unfollow
+            user_id,  // Follower's ID
+          }),
         });
+
+        const data = await res.json();
+
+        if(data.success){
+          set((state) => {
+            if(state.profileUser?._id === organizer_id){
+              return {
+                profileUser: {
+                  ...state.profileUser,
+                  followers: data.followers,
+                },
+              };
+            }
+            return {};
+          });
+        }
+      } catch(error){
+        console.error("Update followers is error:", error);
       }
     },
-
-
   }))
-
 );

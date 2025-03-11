@@ -207,7 +207,7 @@ export const updateFollowing = async (req, res) => {
   const { organizer_id, action } = req.body;   // Target organizer ID
 
   if(!mongoose.Types.ObjectId.isValid(id) || !mongoose.Types.ObjectId.isValid(organizer_id)){
-    return res.status(400).json({ success: false, message: "Invalid user ID"});
+    return res.status(400).json({ success: false, message: "Invalid userID"});
   }
 
   try{
@@ -223,13 +223,13 @@ export const updateFollowing = async (req, res) => {
       return res.status(400).json({ success: false, message: "No action for storing organizer's ID"});
     }
 
-    const updatedUser = await User.findByIdAndUpdate(id, update, { new: true});
+    const updatedUser = await User.findByIdAndUpdate(id, update, { new: true}).select("followers");
 
     if(!updatedUser){
       return res.status(404).json({ success: false, message: "User not found" });
     }
 
-    res.status(200).json({ success: true, data: updatedUser });
+    res.status(200).json({ success: true, followers: updatedUser.followers });
   }
   catch(error){
     console.error("Error updating following:", error.message);
@@ -243,17 +243,17 @@ export const updateFollowers = async (req, res) => {
   const { user_id, action } = req.body;   // Follower ID
 
   if(!mongoose.Types.ObjectId.isValid(id) || !mongoose.Types.ObjectId.isValid(user_id)){
-    return res.status(400).json({ success: false, message: "Invalid user ID"});
+    return res.status(400).json({ success: false, message: "Invalid userID"});
   }
 
   try{
     let update = {};
 
     if(action === "follow"){
-      update.$addToSet = { followers: user_id };   // Add follower
+      update.$addToSet = { following: user_id };   // Add follower
     }
     else if(action === "unfollow"){
-      update.$pull = { followers: user_id };      // Delete follower
+      update.$pull = { following: user_id };      // Delete follower
     }
     else{
       return res.status(400).json({ success: false, message: "No action for storing user's ID"});

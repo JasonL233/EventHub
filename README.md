@@ -7,6 +7,9 @@ This project aims to provide a platform for event sharing. The platform allows e
 # Installation:
 
 ```bash
+# if not at EventHub root directory
+cd EventHub
+
 # Install dependencies
 npm install
 cd frontend

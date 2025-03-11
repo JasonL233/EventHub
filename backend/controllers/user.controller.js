@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import User from "../models/user.model.js";
+import Notification from "../models/notification.model.js";
 
 export const updateUserProfile = async (req, res) => {
   const { id } = req.params;
@@ -219,17 +220,31 @@ export const updateFollowing = async (req, res) => {
     else if(action === "unfollow"){
       update.$pull = { following: organizer_id };      // Delete following
     }
+
+    if (action === "follow") {
+      if (id.toString() !== organizer_id.toString()) {
+        const likerUser = await User.findById(user_id);
+        const likerName = likerUser ? likerUser.username : "Someone";
+        await Notification.create({
+          recipient: organizer_id,
+          type: "follow",
+          message: `User ${likerName} started following you.`,
+          sender: id,
+        });
+      }
+    }
+
     else{
       return res.status(400).json({ success: false, message: "No action for storing organizer's ID"});
     }
 
-    const updatedUser = await User.findByIdAndUpdate(id, update, { new: true});
+    const updatedUser = await User.findByIdAndUpdate(id, update, { new: true}).select("followers");
 
     if(!updatedUser){
       return res.status(404).json({ success: false, message: "User not found" });
     }
 
-    res.status(200).json({ success: true, data: updatedUser });
+    res.status(200).json({ success: true, followers: updatedUser.followers });
   }
   catch(error){
     console.error("Error updating following:", error.message);
@@ -250,10 +265,10 @@ export const updateFollowers = async (req, res) => {
     let update = {};
 
     if(action === "follow"){
-      update.$addToSet = { following: user_id };   // Add follower
+      update.$addToSet = { followers: user_id };   // Add follower
     }
     else if(action === "unfollow"){
-      update.$pull = { following: user_id };      // Delete follower
+      update.$pull = { followers: user_id };      // Delete follower
     }
     else{
       return res.status(400).json({ success: false, message: "No action for storing user's ID"});

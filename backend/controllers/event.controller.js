@@ -1,16 +1,7 @@
 import mongoose from "mongoose";
 import Event from "../models/event.model.js";
-
-// Get all events
-export const getEvents = async (req, res) => {
-  try {
-    const events = await Event.find({});
-    res.status(200).json({ success: true, data: events });
-  } catch (error) {
-    console.log("error in fetching events:", error.message);
-    res.status(500).json({ success: false, message: "Server Error" });
-  }
-};
+import User from "../models/user.model.js";
+import Notification from "../models/notification.model.js";
 
 // Get single specific event
 export const getEvent = async (req, res) => {
@@ -30,6 +21,19 @@ export const getEvent = async (req, res) => {
         .status(400)
         .json({ success: true, message: "Invalid event ID format" });
 
+    res.status(500).json({ success: false, message: "Server Error" });
+  }
+};
+
+// Get all events
+export const getEvents = async (req, res) => {
+  try {
+    const events = await Event.find({})
+      .populate("publisherId", "-password");
+
+    res.status(200).json({ success: true, data: events });
+  } catch (error) {
+    console.log("error in fetching events:", error.message);
     res.status(500).json({ success: false, message: "Server Error" });
   }
 };
@@ -56,7 +60,9 @@ export const createEvent = async (req, res) => {
       return res.status(400).json({ success: false, message: "Please upload a file" });
     }
 
-    const mediaUrl = `http://localhost:4000/uploads/${req.file.filename}`;
+    const PORT = process.env.PORT || 5000;
+
+    const mediaUrl = "http://localhost:" + PORT + "/uploads/${req.file.filename}";
 
     let parsedTags = [];
     if (tags) {
@@ -132,6 +138,19 @@ export const likeEvent = async (req, res) => {
     if (!updatedEvent) {
       return res.status(404).json({ success: false, message: "Event not found" });
     }
+
+    if (action === "like" && user_id.toString() !== updatedEvent.publisherId.toString()) {
+      const likerUser = await User.findById(user_id);
+      const likerName = likerUser ? likerUser.username : "Someone";
+      await Notification.create({
+        recipient: updatedEvent.publisherId,
+        type: "like",
+        message: `${likerName} liked your post "${updatedEvent.title}"`,
+        sender: user_id,
+        post: updatedEvent._id,
+      });
+    }
+
     res.status(200).json({ success: true, data: updatedEvent });
   } catch (error) {
     console.error("Error updating likes:", error.message);

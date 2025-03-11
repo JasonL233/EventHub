@@ -17,8 +17,7 @@ const HomePage = () => {
   useEffect ( () => {
     fetchEvents();
   }, [fetchEvents]);
-  console.log("Events: ", events);
-  console.log("SEARCHTYPE: ", currSearchType);
+
 
   return (
     <div>

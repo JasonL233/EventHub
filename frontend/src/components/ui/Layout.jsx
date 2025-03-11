@@ -1,43 +1,58 @@
-import { useState } from "react";
-import { Box, Container, Flex } from "@chakra-ui/react";
-import { Link, Outlet } from "react-router-dom";
+import { Container, Flex, Box, Image } from "@chakra-ui/react";
+import { Outlet } from "react-router-dom";
 import Sidebar from "./Sidebar"
 import Navbar from "./Navbar"
+import Tagbar from "./Tagbar"
 import LoginPage from "../../pages/LoginPage"
-import {Toaster, toaster} from "./toaster"
+import {Toaster} from "./toaster"
+
 
 // Layout Component
 const Layout = () => {  // Arrow function that returns a React JSX structure
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
   return (
     <>
-    <Toaster />
-   <Flex direction="column" height="100vh" p={3}>
-    <Container maxW="100%" height="12%" color="white">
-      <Navbar />
-    </Container>
-    
-    <Flex flex="1" overflowY="hideen">  
-      <Container 
-        display={{ base: "none", md: "block" }} // Hide on base, show on md and above
-        maxW={{ base: "0%", md: isSidebarOpen ? "17%" : "0%" }}
-        minW={{ base: "0%", md: isSidebarOpen ? "13%" : "0%" }}
-        mt={2} mr={2} p={0}>
-        <Sidebar />
-      </Container>
+      <Toaster />
+      <Flex direction="column" height="100vh" p={3} overflow="hidden">
+        <Container maxW="100%" height="8%" color="white"  display="flex" alignItems="center" justifyContent="center">
+          <Image src={"../../../public/EventHub_logo.png"} alt="Logo" w="78px" h="53px" position="absolute" top="6px" left="30px"/>
+          <Navbar />
+        </Container>
 
-      <Container 
-        maxW={{base: "100%", md: isSidebarOpen ? "83%" : "100%"}}
-        mt={2} p={0} overflowY="auto" color="white">  
-        <Outlet />  
-      </Container>
-    </Flex>
-    
-    <LoginPage />
-   </Flex> 
-   </>
-  )
-};
+        
+        <Flex flex="1" overflow="auto">  
+          <Container 
+            css={{
+              "@media (min-width: 820px)": {
+                display: "block",
+              },
+              "@media (max-width: 819px)": {
+                display: "none",
+              },
+            }}
+            w="280px"
+            maxW="280px"  // Minimum width the sidebar can shrink to
+            minW="250px"  // Maximum width remains fixed at 250px
+            mt={2} mr={2} p={0}
+          >
+            <Sidebar />
+          </Container>
+
+          <Flex direction="column" flex="1" overflow="auto">
+            {/* ✅ Tagbar and Outlet wrapped together in a column */}
+            <Box w="100%" px={4} py={3} borderBottom="1px solid #ddd">
+              <Tagbar />
+            </Box>
+
+            <Box flex="1" w="100%" px={4} py={3}>
+              <Outlet />
+            </Box>
+          </Flex>
+        </Flex>
+        
+        <LoginPage />
+      </Flex> 
+    </>
+  )};
 
 export default Layout;

@@ -3,7 +3,10 @@ import { HStack, VStack, Box, Button, Textarea, Spacer, Text, Image, Portal } fr
 import { useUserStore } from '../../store/user';
 import { useEventStore } from '../../store/event';
 import { useDialogStore } from '../../store/dialog';
+import { SiDialogflow } from "react-icons/si";
 import Reply from './Reply';
+import CommentDetail from './CommentDetail';
+import { useNavigate } from "react-router-dom";
 
 
 const CommentCard = ({event, commentState, setCommentState }) => {
@@ -11,26 +14,65 @@ const CommentCard = ({event, commentState, setCommentState }) => {
     const currUser = useUserStore((state) => state.curr_user); // current user
     const openLogin = useDialogStore((state) => state.openLogin); // login prompt
     const {fetchComments, comments} = useEventStore(); // Reply other comments
+    const navigate = useNavigate();// Add React Router navigate function
 
     const {fetchUser, user} = useUserStore();
-    const [userComment, setUserComment] = useState(""); // store user's current comment
     const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [commentDetail, setCommentDetail] = useState(false);
+    const [clicked, setClicked] = useState(false);
+    const [targetComment, setTargetComment] = useState();
 
     let headComment = [];
     let childComment = {};
+    const [userDic, setUserDic] = useState({});
     let curId = "";
-    let dialogOpen = false;
     
     useEffect(() => {
-        if (event._id) {
+        if (event._id != null) {
             fetchComments(event._id);
         }
-        if (curId != "") {
-            fetchUser(curId);
-        }
+        
+        setCommentDetail(false);
         setIsDialogOpen(false);
         setCommentState(false);
-    }, [event.comments, curId, commentState, fetchComments]);
+    }, [curId, event.comments, commentState, fetchComments, fetchUser ]);
+
+    useEffect(() => {
+        const fetchUsers = async () => {
+            if (comments != null) {
+                for (let comment of comments) {
+                    if (comment.userId != null) {
+                        const respond = await fetch(`/api/users/${comment.userId}`);
+                        const data = await respond.json();
+                        setUserDic(prev => ({
+                            ...prev,
+                            [String(comment._id)]: {
+                                username: data.data.username,
+                                profileImage: data.data.profileImage
+                            }
+                        }));
+                        /*
+                        await fetchUser(comment.userId).then(
+                            setUserDic(prev => ({
+                                ...prev,
+                                [String(comment._id)]: {
+                                    username: user.username,
+                                    profileImage: user.profileImage
+                                }
+                            }))
+                        ).then(
+                            console.log(comment),
+                            console.log(comment._id),
+                            console.log(userDic[String(comment._id)])
+                        );*/
+                    }
+                    
+                }
+            }
+        };
+
+        fetchUsers();
+    }, [comments]);
 
     const sortComment = () => {
         headComment = [];
@@ -47,8 +89,31 @@ const CommentCard = ({event, commentState, setCommentState }) => {
         }
     };
 
-    const handleReply = () => {
-        setIsDialogOpen(true);
+    const handleReply = async (event, head) => {
+        event.stopPropagation();
+        if (currUser) {
+            setTargetComment(head);
+            setCommentDetail(false);
+            setIsDialogOpen(true);
+        } else {
+            openLogin();
+        }
+    };
+
+    const handleAvatarClick = (event, userId) => {
+        setClicked(true);
+        event.stopPropagation();
+        navigate(`/profile/${userId}`);
+    };
+
+    const handleBox = (head) => {
+        if (clicked || isDialogOpen) {
+            setClicked(false);
+            return;
+        } else {
+            setTargetComment(head);
+            setCommentDetail(true);
+        }
     };
 
     return (
@@ -63,69 +128,90 @@ const CommentCard = ({event, commentState, setCommentState }) => {
                     rounded = {"lg"} 
                     shadow = {"md"}
                     border={"black"}
+                    _hover={{
+                        backgroundColor: 'gray.200'
+                    }}
+                    cursor={'pointer'}
+                    onClick={() => {handleBox(head)}}
                 >
-                    {curId = head.userId}
                     <HStack>
-                        <VStack>
                         {/*Display user info*/}
-                            <Image 
-                                src={user.profileImage} 
+                        {userDic[String(head._id)] && (
+                            <Image
+                                src={userDic[String(head._id)].profileImage} 
                                 shadow={"md"} 
                                 border="black"
                                 borderRadius={"full"} 
                                 boxSize={"70px"}
                                 objectFit={"cover"}
                                 alignSelf={"flex-start"}
+                                onClick={(e) => handleAvatarClick(e, head.userId)}
                             />
-                        </VStack>
+                        )}
                         <VStack
                             w={"full"}
-                            color={"gray.300"}
-                        >
-                        {/*Display user comment to the post*/}
-                            <Text
-                                fontSize={"xl"}
-                                fontWeight={"bold"}
-                                bgClip={"text"}
-                                textAlign={"left"}
-                                color={"black"}
-                                whiteSpace={"pre-line"}
-                                alignSelf={"flex-start"}
                             >
-                                {user.username + ":"}
-                            </Text>
-                            <Text
-                                fontSize={"md"}
-                                bgClip={"text"}
-                                textAlign={"left"}
-                                color={"black"}
-                                whiteSpace={"pre-line"}
-                                alignSelf={"flex-start"}
+                            <VStack
+                                w={"full"}
+                                color={"gray.300"}
                             >
-                                {head.comment}
-                            </Text>
-                            {currUser && (
-                                <Button
-                                    style={{ 
-                                        border: 'black', 
-                                        background: 'black', 
-                                        cursor: 'pointer',
-                                        fontSize: '24px',
-                                        color: 'white',
-                                        alignSelf: 'end'
-                                        }}
-                                    onClick={handleReply}
-                                    rounded={"lg"}
-                                >
-                                    Reply
-                                </Button>
-                            )}
-                            {!dialogOpen && <Reply event={event} isDialogOpen={isDialogOpen} setIsDialogOpen={setIsDialogOpen} commentState={commentState} setCommentState={setCommentState} target={head._id}/>}
-                            {!dialogOpen == isDialogOpen && (dialogOpen = true)}
+                                    {/*Display user comment to the post*/}
+                                    <Text
+                                        fontSize={"xl"}
+                                        fontWeight={"bold"}
+                                        bgClip={"text"}
+                                        textAlign={"left"}
+                                        color={"black"}
+                                        whiteSpace={"pre-line"}
+                                        alignSelf={"flex-start"}
+                                        maxW={'80%'}
+                                    >
+                                        {userDic[String(head._id)] && (
+                                            userDic[String(head._id)].username + ":"
+                                        )}
+                                    </Text>
+                                    <Text
+                                        fontSize={"md"}
+                                        bgClip={"text"}
+                                        textAlign={"left"}
+                                        color={"black"}
+                                        whiteSpace={"pre-line"}
+                                        alignSelf={"flex-start"}
+                                        maxW={'80%'}
+                                    >
+                                        {head.comment}
+                                    </Text>
+                            </VStack>
+                            
                         </VStack>
+                        
+                    </HStack>
+                    <HStack width={'100%'} alignSelf={'flex-end'}>
+                        <Spacer/>
+                        <SiDialogflow />
+                        <Text>
+                            {childComment[head._id].length}
+                        </Text>
+                        <Button
+                            style={{ 
+                                border: 'black', 
+                                background: 'black', 
+                                cursor: 'pointer',
+                                fontSize: '24px',
+                                color: 'white',
+                                alignSelf: 'end'
+                                }}
+                            onClick={(e) => handleReply(e, head)}
+                            rounded={"lg"}
+                        >
+                            Reply
+                        </Button>
+                        {head == targetComment && <CommentDetail isOpen={commentDetail} setIsOpen={() => setCommentDetail(false)} comment={targetComment} replies={childComment} userDict={userDic} setCommentState={setCommentState} />}
+                        {head == targetComment && <Reply event={event} isDialogOpen={isDialogOpen} setIsDialogOpen={() => setIsDialogOpen(false)} commentState={commentState} setCommentState={setCommentState} target={targetComment}/>}
                     </HStack>
                 </Box>
             ))}
+            
         </>
         
     )

@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import { Button, Textarea, Text, Portal } from '@chakra-ui/react';
-import { DialogBody, DialogCloseTrigger, DialogContent, DialogFooter, DialogHeader, DialogRoot, DialogTitle, DialogTrigger,} from "./dialog"
+import { DialogBody, DialogCloseTrigger, DialogContent, DialogFooter, DialogHeader, DialogRoot, DialogTitle, DialogTrigger } from "./dialog"
 import { useUserStore } from '../../store/user';
 import { useEventStore } from '../../store/event';
 import { toaster } from "./toaster";
@@ -13,17 +13,26 @@ const Reply = ({event, isDialogOpen, setIsDialogOpen, commentState, setCommentSt
   const {replyComment} = useEventStore(); // upload comment
   const promptMessage = "Post your comment"; // Message displayed in comment prompt
   const [userComment, setUserComment] = useState(""); // store user's current comment
+  const dialogRef = useRef(null);
 
   useEffect(() => {
-    
-  }, [])
+    const handleClickOutside = (event) => {
+      if (dialogRef.current && !dialogRef.current.contains(event.target)) {
+          setIsDialogOpen();
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isDialogOpen, setIsDialogOpen]);
 
   const handlePost = async () => {
       // if user login then upload comment
       if (user) {
           // if user didn't upload empty comment
-          if (userComment !== "") {
-              const {success, message} = await replyComment(event._id, user._id, userComment, target);
+          if (userComment !== "" && target) {
+              const {success, message} = await replyComment(event._id, user._id, userComment, target._id);
 
               // if failing upload comment 
               if (!success) {
@@ -50,9 +59,11 @@ const Reply = ({event, isDialogOpen, setIsDialogOpen, commentState, setCommentSt
       
   };
 
+  if (!isDialogOpen) return null;
+
   return (
     <Portal>
-      <DialogRoot placement={"center"} open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+      <DialogRoot ref={dialogRef} placement={"center"} open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>

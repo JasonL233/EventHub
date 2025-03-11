@@ -3,7 +3,6 @@ import { FaHeart } from 'react-icons/fa';
 
 const LikeButton = ( {initialLiked, user, onLike } ) => {
     const [liked, setLiked] = useState(initialLiked);
-    console.log("initialLiked: " + initialLiked);
 
     useEffect(() => {
         setLiked(initialLiked);

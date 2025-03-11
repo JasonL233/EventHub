@@ -21,7 +21,6 @@ const CommentCard = ({event, commentState, setCommentState }) => {
     const [commentDetail, setCommentDetail] = useState(false);
     const [clicked, setClicked] = useState(false);
     const [targetComment, setTargetComment] = useState();
-    const [showMore, setShowMore] = useState(false);
 
     let headComment = [];
     let childComment = {};
@@ -114,7 +113,6 @@ const CommentCard = ({event, commentState, setCommentState }) => {
         } else {
             setTargetComment(head);
             setCommentDetail(true);
-            setShowMore(true);
         }
     };
 

@@ -65,6 +65,7 @@ const LeaveCommentChart = ({event, commentState, setCommentState}) => {
                     objectFit={"cover"}
                     alignSelf={"flex-start"}
                     onClick={() => navigate(`/profile/${user._id}`)}
+                    cursor={'pointer'}
                 />
             )}
 

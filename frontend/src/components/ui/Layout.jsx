@@ -1,10 +1,11 @@
-import { Container, Flex, Box } from "@chakra-ui/react";
+import { Container, Flex, Box, Image } from "@chakra-ui/react";
 import { Outlet } from "react-router-dom";
 import Sidebar from "./Sidebar"
 import Navbar from "./Navbar"
 import Tagbar from "./Tagbar"
 import LoginPage from "../../pages/LoginPage"
 import {Toaster} from "./toaster"
+
 
 // Layout Component
 const Layout = () => {  // Arrow function that returns a React JSX structure
@@ -14,6 +15,7 @@ const Layout = () => {  // Arrow function that returns a React JSX structure
       <Toaster />
       <Flex direction="column" height="100vh" p={3} overflow="hidden">
         <Container maxW="100%" height="8%" color="white"  display="flex" alignItems="center" justifyContent="center">
+          <Image src={"../../../public/EventHub_logo.png"} alt="Logo" w="78px" h="53px" position="absolute" top="6px" left="30px"/>
           <Navbar />
         </Container>
 

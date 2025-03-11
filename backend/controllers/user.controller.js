@@ -250,10 +250,10 @@ export const updateFollowers = async (req, res) => {
     let update = {};
 
     if(action === "follow"){
-      update.$addToSet = { following: user_id };   // Add follower
+      update.$addToSet = { followers: user_id };   // Add follower
     }
     else if(action === "unfollow"){
-      update.$pull = { following: user_id };      // Delete follower
+      update.$pull = { followers: user_id };      // Delete follower
     }
     else{
       return res.status(400).json({ success: false, message: "No action for storing user's ID"});

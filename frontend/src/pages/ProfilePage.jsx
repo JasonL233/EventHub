@@ -3,11 +3,14 @@ import { useUserStore } from '../store/user';
 import { useEventStore } from '../store/event';
 import { useParams } from 'react-router-dom';
 import { Box, Container, Heading, Image, Text, VStack, Grid, GridItem, Button, Input} from "@chakra-ui/react";
+import { useNavigate } from 'react-router-dom';
+import { postContainerStyle, postTextStyle, postTitleStyle } from '../components/ui/ProfileLikePostStyle';
 
 const ProfilePage = () => {
   const { id } = useParams();   // Get the ID from URL
   const curr_user = useUserStore((state) => state.curr_user);
   const {events, fetchEvents} = useEventStore();
+  const navigate = useNavigate();
 
   const [profileUser, setProfileUser] = useState(null);
   // State to store liked events and posted events (for event organizers)
@@ -260,10 +263,10 @@ const ProfilePage = () => {
               const truncatedDescription = event.description.split(/[.\n]/)[0] + "...";
               
               return (
-                <GridItem key={event._id} p={4} borderWidth={1} borderRadius="md">
+                <GridItem key={event._id} {...postContainerStyle} onClick={() => navigate(`/post/${event._id}`)}>
                   <VStack align="start">
-                    <Heading size="md" color="black">{event.title}</Heading>
-                    <Text color="gray.600">{truncatedDescription}</Text>
+                    <Heading {...postTitleStyle}>{event.title}</Heading>
+                    <Text {...postTextStyle}>{truncatedDescription}</Text>
                     <Text fontWeight="bold" color="black">Likes: {event.likes}</Text>
                   </VStack>
                 </GridItem>
@@ -278,10 +281,10 @@ const ProfilePage = () => {
         <Grid templateColumns="repeat(3, 1fr)" gap={4}>
           {likedevents.length > 0 ? (
             likedevents.map(event => (
-              <GridItem key={event._id} p={4} borderWidth={1} borderRadius="md">
+              <GridItem key={event._id} {...postContainerStyle} onClick={() => navigate(`/post/${event._id}`)}>
                 <VStack align="start">
-                  <Heading size="md" color="black">{event.title}</Heading>
-                  <Text color="gray.600">{event.description.split(/[.\n]/)[0] + "..."}</Text>
+                  <Heading {...postTitleStyle}>{event.title}</Heading>
+                  <Text {...postTextStyle}>{event.description.split(/[.\n]/)[0] + "..."}</Text>
                 </VStack>
               </GridItem>
             ))

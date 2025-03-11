@@ -48,14 +48,43 @@ const ProfilePage = () => {
   }, [id, curr_user]);
 
   // Handle update
-  const Updatename_profile = async() => {
+  const UpdateUsername = async() => {
     if(!isMyProfile) return;  // Prevent updating other users
 
-    const updateUserInfo = await updateUserProfile(profileUser._id, newUsername, newProfileImage);
+    const updateUserInfo = await updateUserProfile(profileUser._id, newUsername, profileUser.profileImage);
     if(updateUserInfo){
-      setProfileUser(updateUserInfo);  // Ensure UI reflects changes
+      setProfileUser((prev) => ({
+        ...prev,
+        username: updateUserInfo.username,  // Only update username
+      })); 
+      useUserStore.setState((state) => ({
+        curr_user: {
+          ...state.curr_user,
+          username: updateUserInfo.username,   // Ensure Zustand update
+        },
+      }));
     }
     setIsEditing(false);    // Exist editing model
+  };
+
+  const UpdateProfileImage = async (imageURL) => {
+    if(!isMyProfile || !imageURL) return;  // Prevent updating other users
+
+    setNewProfileImage(imageURL);
+
+    const updateUserInfo = await updateUserProfile(profileUser._id, profileUser.username, imageURL);
+    if(updateUserInfo){
+      setProfileUser((prev) => ({
+        ...prev,
+        profileImage: updateUserInfo.profileImage,  // Only update profile image
+      }));
+      useUserStore.setState((state) => ({
+        curr_user: {
+          ...state.curr_user,
+          profileImage: updateUserInfo.profileImage, // Ensure Zustand update
+        },
+      }));
+    }
   };
 
   useEffect(() => {
@@ -146,7 +175,7 @@ const ProfilePage = () => {
                   if(isMyProfile){
                     const imageURL = prompt("Please enter a new profile image URL: ");
                     if (imageURL){
-                      setNewProfileImage(imageURL);
+                      UpdateProfileImage(imageURL);
                     }
                   }
                 }}
@@ -177,7 +206,7 @@ const ProfilePage = () => {
                     {isEditing && (
                       <Grid templateColumns="repeat(2, auto)" gap={2}>
                         <GridItem>
-                          <Button colorScheme="blue" onClick={Updatename_profile}>Save</Button>
+                          <Button colorScheme="blue" onClick={UpdateUsername}>Save</Button>
                        </GridItem>
                         <GridItem>
                           <Button colorScheme="gray" onClick={() => setIsEditing(false)}>Cancel</Button>

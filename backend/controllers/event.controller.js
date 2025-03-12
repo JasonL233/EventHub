@@ -1,7 +1,5 @@
 import mongoose from "mongoose";
 import Event from "../models/event.model.js";
-import User from "../models/user.model.js";
-import Notification from "../models/notification.model.js";
 
 // Get single specific event
 export const getEvent = async (req, res) => {
@@ -137,18 +135,6 @@ export const likeEvent = async (req, res) => {
     const updatedEvent = await Event.findByIdAndUpdate(id, update, { new: true, runValidators: true });
     if (!updatedEvent) {
       return res.status(404).json({ success: false, message: "Event not found" });
-    }
-
-    if (action === "like" && user_id.toString() !== updatedEvent.publisherId.toString()) {
-      const likerUser = await User.findById(user_id);
-      const likerName = likerUser ? likerUser.username : "Someone";
-      await Notification.create({
-        recipient: updatedEvent.publisherId,
-        type: "like",
-        message: `${likerName} liked your post "${updatedEvent.title}"`,
-        sender: user_id,
-        post: updatedEvent._id,
-      });
     }
 
     res.status(200).json({ success: true, data: updatedEvent });

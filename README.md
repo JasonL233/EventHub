@@ -60,7 +60,7 @@ Make sure you are at the root directory
 npm install
 ```
 which should download a set of `node_modules` for the backend server.
-Main backend dependencies:
+#### Main backend dependencies:
 * Express.js - the web server library
 * Mongoose - and object-document mapping library for MongoDB
 * dotenv - manage environment variables
@@ -72,7 +72,7 @@ npm install
 cd ..
 ```
 which should also download a set of `node_modules` for the frontend
-Main frontend dependencies:
+#### Main frontend dependencies:
 * React.js - library for web applications
 * react-router-dom - simulates paths for different pages
 * Vite.js - the build tool for web applications

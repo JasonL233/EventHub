@@ -117,7 +117,7 @@ const ProfilePage = () => {
 
     setProfileUser((pre_ProfileUser) => ({
       ...pre_ProfileUser,
-      followers: updateFollowers,
+      followers: updatedFollowers,
     }));
 
     if(!curr_user.isEventOrganizer){

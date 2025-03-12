@@ -188,7 +188,7 @@ export const replyComment = async (req, res) => {
 
   try {
     const event = await Event.findById(id);
-    const update = { userId: user_id, comment: comment};
+    const update = { userId: user_id, comment: comment, replyTo: reply_to};
     event.comments.push(update);
     await event.save();
     const updatedEvent = await Event.findById(id);

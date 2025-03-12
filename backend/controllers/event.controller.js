@@ -38,47 +38,44 @@ export const getEvents = async (req, res) => {
 
 // Creating events: support for images and videos
 export const createEvent = async (req, res) => {
+  const { title, description, mediaUrl, eventType, publisherId, comments, likes, tags } = req.body;
+
+  // Validate required fields
+  if (!title || !description || !mediaUrl || !publisherId) {
+    return res.status(400).json({
+      success: false,
+      message: "Please provide title, description, mediaUrl, and publisherId",
+    });
+  }
+
+  // Validate publisherId as ObjectId
+  if (!mongoose.Types.ObjectId.isValid(publisherId)) {
+    return res.status(400).json({
+      success: false,
+      message: "Invalid publisherId format",
+      tags: parsedTags,
+    });
+  }
+
+  let parsedTags = [];
+  if (tags) {
+    try {
+      parsedTags = JSON.parse(tags);
+    } catch (err) {
+      parsedTags = [];
+    }
+  }
+
   try {
-    const { title, description, eventType, publisherId, tags } = req.body;
-
-    // Validate required fields
-    if (!title || !description || !publisherId) {
-      return res.status(400).json({
-        success: false,
-        message: "Missing required fields (title, description, publisherId)",
-      });
-    }
-
-    if (!mongoose.Types.ObjectId.isValid(publisherId)) {
-      return res.status(400).json({ success: false, message: "Invalid publisherId format" });
-    }
-
-    // Check file
-    if (!req.file) {
-      return res.status(400).json({ success: false, message: "Please upload a file" });
-    }
-
-    const PORT = process.env.PORT || 5000;
-
-    const mediaUrl = "http://localhost:" + PORT + "/uploads/${req.file.filename}";
-
-    let parsedTags = [];
-    if (tags) {
-      try {
-        parsedTags = JSON.parse(tags);
-      } catch (err) {
-        parsedTags = [];
-      }
-    }
 
     const newEvent = new Event({
       title,
       description,
       mediaUrl,
-      eventType: eventType || "image",
+      eventType: eventType || "image", // Default type is image
       publisherId,
-      likes: 0,
-      comments: [],
+      likes: likes || 0,
+      comments: comments || [],
       tags: parsedTags,
     });
 
@@ -96,12 +93,14 @@ export const createEvent = async (req, res) => {
 
 export const updateEvent = async (req, res) => {
   const { id } = req.params;
+  const event = req.body;
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res.status(404).json({ success: false, message: "Invalid Event Id" });
   }
   try {
-    const event = req.body;
-    const updatedEvent = await Event.findByIdAndUpdate(id, event, { new: true });
+    const updatedEvent = await Event.findByIdAndUpdate(id, event, {
+      new: true,
+    });
     res.status(200).json({ success: true, data: updatedEvent });
   } catch (error) {
     res.status(500).json({ success: false, message: "Server Error" });
@@ -127,7 +126,7 @@ export const likeEvent = async (req, res) => {
     return res.status(400).json({ success: false, message: "Invalid event ID" });
   }
   try {
-    const update = { likes };
+    let update = { likes: likes };
     if (action === "like") update.$addToSet = { likedBy: user_id };
     else if (action === "unlike") update.$pull = { likedBy: user_id };
     else return res.status(400).json({ success: false, message: "Invalid action" });
@@ -189,13 +188,15 @@ export const replyComment = async (req, res) => {
 
   try {
     const event = await Event.findById(id);
-    if (!event) {
-      return res.status(404).json({ success: false, message: "Event not found" });
-    }
-    event.comments.push({ replyTo: reply_to, userId: user_id, comment: comment });
+    const update = { userId: user_id, comment: comment};
+    event.comments.push(update);
     await event.save();
-
     const updatedEvent = await Event.findById(id);
+    if (!updateEvent) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Event not found" });
+    } 
     res.status(200).json({ success: true, data: updatedEvent });
   } catch (error) {
     console.error("Error Replying Comment:", error.message);

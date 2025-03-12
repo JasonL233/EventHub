@@ -16,9 +16,6 @@ const PORT = process.env.PORT || 4000;
 // Parse JSON
 app.use(express.json());
 
-// Serve static files from "uploads" so that /uploads/xxx.jpg can be accessed
-app.use("/uploads", express.static("uploads"));
-
 app.use("/api/users", userRoutes);
 
 app.use("/api/events", eventRoutes);

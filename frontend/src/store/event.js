@@ -36,6 +36,10 @@ export const useEventStore = create((set) => ({
   fetchEventsByTitle: async (title) => {
     const respond = await fetch(`/api/search/events/${title}`);
     const data = await respond.json();
+    const searchedEvents = data.data
+    if (searchedEvents.length === 0){
+      console.log("NO EVENTS")
+    }
     set({ events: data.data });
     set({ searchText: title});
     set({ searchType: "Event Title"});
@@ -67,11 +71,22 @@ export const useEventStore = create((set) => ({
     set({isCombineSearching: true});
   },
 
-  // Create event with FormData
-  createEvent: async (formData) => {
+  createEvent: async (newEvent) => {
+    if (
+      !newEvent.title?.trim() ||
+      !newEvent.mediaUrl?.trim() ||
+      !newEvent.description?.trim() ||
+      !newEvent.publisherId
+    ) {
+      return {
+        success: false,
+        message: "Please provide title, description, mediaUrl, and publisherId",
+      };
+    }
     const res = await fetch("/api/events", {
       method: "POST",
-      body: formData,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(newEvent),
     });
 
     const data = await res.json();

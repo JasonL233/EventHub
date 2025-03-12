@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
 import { Box, Button, Container, Flex, Input, Textarea, Image, Text, Heading } from "@chakra-ui/react";
 import { useEventStore } from "../store/event";
 import { toaster } from "../components/ui/toaster";
@@ -21,29 +21,17 @@ const CreatePage = () => {
   // State for tag input
   const [tagInput, setTagInput] = useState("");
 
-  const [selectedFile, setSelectedFile] = useState(null);
-  const fileInputRef = useRef(null);
+  const handleMediaUpload = () => {
+    const mediaUrl = prompt("Please enter the media URL:");  // Popup input box
+    if (mediaUrl) {
+      setNewEvent(prevState => ({ ...prevState, mediaUrl }));
+      alert("Media address has been updated!");
+    }
+  };
 
   const { createEvent } = useEventStore();
   const navigate = useNavigate(); // Initialize navigate function
   // console.log("Toaster Object:", toaster);
-
-  // Click preview area to trigger file input
-  const handleClickUploadArea = () => {
-    fileInputRef.current.click();
-  };
-
-  // On file selection, store the file & create local preview
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setSelectedFile(file);
-      setNewEvent((prevState) => ({
-        ...prevState,
-        mediaUrl: URL.createObjectURL(file), // local preview only
-      }));
-    }
-  };
 
   // Submit form: send file + fields via FormData
   // Add tag when Enter is pressed in the tag input box.
@@ -66,26 +54,8 @@ const CreatePage = () => {
   };
 
   const handleSubmit = async () => {
-    if (!selectedFile) {
-      alert("Please select a file!");
-      return;
-    }
-    if (!newEvent.title.trim() || !newEvent.description.trim()) {
-      alert("Please fill in title and description!");
-      return;
-    }
-
-    const formData = new FormData();
-    formData.append("image", selectedFile); // "image" must match backend Multer field name
-    formData.append("title", newEvent.title);
-    formData.append("description", newEvent.description);
-    formData.append("eventType", newEvent.eventType);
-    formData.append("publisherId", newEvent.publisherId);
-
-    formData.append("tags", JSON.stringify(newEvent.tags));
-  
-    const { success, message } = await createEvent(formData);
-
+    const { success, message } = await createEvent(newEvent);
+    
     if (!success) {
       toaster.create({
         title: "Error",
@@ -95,26 +65,17 @@ const CreatePage = () => {
         isCloseable: true,
       });
       return;
+    } else {
+      toaster.create({
+        title: "Success",
+        description: message,
+        type: "success",
+        duration: 1500,
+        isCloseable: true,
+      });
     }
 
-    toaster.create({
-      title: "Success",
-      description: message,
-      type: "success",
-      duration: 1500,
-      isCloseable: true,
-    });
-
-    // Reset
-    setNewEvent({
-      title: "",
-      description: "",
-      eventType: "image",
-      publisherId: currUser._id,
-      mediaUrl: "",
-      tags: []
-    });
-    setSelectedFile(null);
+    setNewEvent({ title: "", description: "", mediaUrl: "", eventType: "image", publisherId: currUser._id });
 
     setTimeout(() => {
       navigate("/"); // Redirect to main page after 1 second
@@ -164,7 +125,7 @@ const CreatePage = () => {
             height="180px"
             cursor="pointer"
             _hover={{ borderColor: "gray.600" }}
-            onClick={handleClickUploadArea}
+            onClick={handleMediaUpload}
             transition="0.2s"
             bg="gray.100"
           >
@@ -189,14 +150,6 @@ const CreatePage = () => {
               <Text fontSize="xl" color="gray.500">+</Text>
             )}
           </Flex>
-          {/* Hidden input for file */}
-          <input
-            type="file"
-            accept="image/*,video/*"
-            ref={fileInputRef}
-            style={{ display: "none" }}
-            onChange={handleFileChange}
-          />
         </Box>
 
         {/* Content - Below cover picture */}
@@ -241,7 +194,7 @@ const CreatePage = () => {
             Tags
           </Text>
           <Flex wrap="wrap" mb={2}>
-            {newEvent.tags.map((tag, index) => (
+            {(newEvent.tags || []).map((tag, index) => (
               <Box
                 key={index}
                 bg="gray.200"

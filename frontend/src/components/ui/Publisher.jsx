@@ -15,8 +15,8 @@ const Publisher = ({ event }) => {
     // login prompt
     const openLogin = useDialogStore((state) => state.openLogin);
     // Folow
-    const {updateFollowing} = useUserStore();
-    const {updateFollowers} = useUserStore();
+    const {updateFollow} = useUserStore();
+
     // Loading state
     const [loading, setLoading] = useState(true);
 
@@ -34,8 +34,7 @@ const Publisher = ({ event }) => {
 
     const handleFollow = () => {
         if (curUser) {
-            updateFollowing(curUser._id, publisher._id, true);
-            updateFollowers(publisher._id, curUser._id, true);
+            updateFollow(curUser._id, event.publisherId, true);
         } else {
             openLogin();
         }
@@ -43,8 +42,7 @@ const Publisher = ({ event }) => {
 
     const handleUnfollow = () => {
         if (curUser) {
-            updateFollowing(curUser._id, publisher._id, false);
-            updateFollowers(publisher._id, curUser._id, false);
+            updateFollow(curUser._id, event.publisherId, false);
         } else {
             openLogin();
         }
@@ -78,7 +76,7 @@ const Publisher = ({ event }) => {
                 >
                 {publisher ? publisher.username : 'Unknown User'}
             </Text>
-            {publisher && curUser && (curUser.following.includes(publisher._id)? (
+            {curUser && (curUser.following.includes(event.publisherId) ? (
                 <Button
                     border={'transparent'}
                     background={'transparent'}

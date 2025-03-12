@@ -1,4 +1,4 @@
-import React, { act, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useUserStore } from '../store/user';
 import { useEventStore } from '../store/event';
 import { useParams } from 'react-router-dom';
@@ -22,7 +22,7 @@ const ProfilePage = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [newUsername, setNewUsername] = useState(curr_user?.username || "");
   const [newProfileImage, setNewProfileImage] = useState(curr_user?.profileImage || "https://static.thenounproject.com/png/5034901-200.png");
-  const { fetchUser, updateUserProfile, updateFollowing, updateFollowers} = useUserStore();
+  const { fetchUser, updateUserProfile, updateFollow} = useUserStore();
 
   {/* If currUser exists, directly get currUser.isEventOrganizer.
       If currUser is empty (not logged in), 
@@ -104,34 +104,15 @@ const ProfilePage = () => {
     const newIsFollowing = !isFollowing; // First calculate the new isFollowing state
     setIsFollowing(newIsFollowing);
 
-    setProfileUser((pre_ProfileUser) => ({
-      ...pre_ProfileUser,
-      followers: newIsFollowing
-        ? [...(pre_ProfileUser.followers || []), curr_user._id]    // Add followers
-        : (pre_ProfileUser.followers || []).filter((id) => id !== curr_user._id),   // Unfollow
-    }));
-
-    // Update backend
-    await updateFollowing(curr_user._id, profileUser._id, newIsFollowing);
-    const updatedFollowers = await updateFollowers(profileUser._id, curr_user._id, newIsFollowing);
-
-    setProfileUser((pre_ProfileUser) => ({
-      ...pre_ProfileUser,
-      followers: updatedFollowers,
-    }));
-
-    if(!curr_user.isEventOrganizer){
-      set((state) => ({
-        curr_user: {
-          ...state.curr_user,
-          following: newIsFollowing
-            ? [...(state.curr_user.following || []), profileUser._id]
-            : (state.curr_user.following || []).filter((id) => id !== profileUser._id),
-        },
+    // Call a single updateFollow interface
+    const res = await updateFollow(curr_user._id, profileUser._id, newIsFollowing);
+    if(res.success){
+      const updatedFollowers = res.data.targetUser.followers;
+      setProfileUser((pre_ProfileUser) => ({
+        ...pre_ProfileUser,
+        followers: updatedFollowers,
       }));
-    }
-
-      
+    } 
   };
   
   useEffect(() => {
@@ -237,7 +218,16 @@ const ProfilePage = () => {
                 </Grid>
                 {/* the follow and unfollow button */}
                 {!isMyProfile && (
-                  <Button colorScheme={isFollowing ? "red" : "blue"} onClick={handleFollow}>
+                  <Button 
+                  bg={isFollowing ? "gray.200" : "black"}
+                  color={isFollowing ? "black" : "white"}
+                  onClick={handleFollow}
+                  transition="transform 0.2s ease-in-out"
+                  _hover={{
+                    transform: "translateY(-2px) scale(1.05)",
+                    bg: isFollowing ? "gray.300" : "blue.600",
+                    }}
+                  >
                     {isFollowing ? "Unfollow" : "Follow"}
                   </Button>
                 )}

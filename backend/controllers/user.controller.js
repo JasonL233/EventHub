@@ -202,75 +202,46 @@ export const updateLikedPost = async (req, res) => {
 };
 
 // Handle user follow/unfollow event organizer
-export const updateFollowing = async (req, res) => {
-  const { id } = req.params;  // Current user's ID
-  const { organizer_id, action } = req.body;   // Target organizer ID
+export const updateFollow = async (req, res) => {
+  const targetId = req.params.id; // Target user ID
+  const { user_id, action } = req.body; // current user ID and operation
 
-  if(!mongoose.Types.ObjectId.isValid(id) || !mongoose.Types.ObjectId.isValid(organizer_id)){
-    return res.status(400).json({ success: false, message: "Invalid userID"});
+  if (!mongoose.Types.ObjectId.isValid(targetId) || !mongoose.Types.ObjectId.isValid(user_id)) {
+    return res.status(400).json({ success: false, message: "Invalid userID" });
   }
 
-  try{
-    let update = {};
+  let updateCurrent, updateTarget;
+  if (action === "follow") {
 
-    if(action === "follow"){
-      update.$addToSet = { following: organizer_id };   // Add following
-    }
-    else if(action === "unfollow"){
-      update.$pull = { following: organizer_id };      // Delete following
-    }
+    updateCurrent = { $addToSet: { following: targetId } };
+    updateTarget = { $addToSet: { followers: user_id } };
 
+  } else if (action === "unfollow") {
 
-    else{
-      return res.status(400).json({ success: false, message: "No action for storing organizer's ID"});
-    }
+    updateCurrent = { $pull: { following: targetId } };
+    updateTarget = { $pull: { followers: user_id } };
 
-    const updatedUser = await User.findByIdAndUpdate(id, update, { new: true}).select("followers");
+  } else {
+    
+    return res.status(400).json({ success: false, message: "No action" });
+  }
 
-    if(!updatedUser){
+  try {
+    const [updatedCurrent, updatedTarget] = await Promise.all([
+      User.findByIdAndUpdate(user_id, updateCurrent, { new: true }),
+      User.findByIdAndUpdate(targetId, updateTarget, { new: true })
+    ]);
+
+    if (!updatedCurrent || !updatedTarget) {
       return res.status(404).json({ success: false, message: "User not found" });
     }
 
-    res.status(200).json({ success: true, followers: updatedUser.followers });
-  }
-  catch(error){
-    console.error("Error updating following:", error.message);
-    res.status(500).json({ success: false, message: "Server error"});
-  }
-};
-
-// Handle event organizer follow/unfollow
-export const updateFollowers = async (req, res) => {
-  const { id } = req.params;  // Target organizer ID
-  const { user_id, action } = req.body;   // Follower ID
-
-  if(!mongoose.Types.ObjectId.isValid(id) || !mongoose.Types.ObjectId.isValid(user_id)){
-    return res.status(400).json({ success: false, message: "Invalid userID"});
-  }
-
-  try{
-    let update = {};
-
-    if(action === "follow"){
-      update.$addToSet = { followers: user_id };   // Add follower
-    }
-    else if(action === "unfollow"){
-      update.$pull = { followers: user_id };      // Delete follower
-    }
-    else{
-      return res.status(400).json({ success: false, message: "No action for storing user's ID"});
-    }
-
-    const updatedOrganizer = await User.findByIdAndUpdate(id, update, { new: true});
-
-    if(!updatedOrganizer){
-      return res.status(404).json({ success: false, message: "Organizer not found" });
-    }
-
-    res.status(200).json({ success: true, data: updatedOrganizer });
-  }
-  catch(error){
-    console.error("Error updating followers:", error.message);
-    res.status(500).json({ success: false, message: "Server error"});
+    res.status(200).json({
+      success: true,
+      data: { currentUser: updatedCurrent, targetUser: updatedTarget }
+    });
+  } catch (error) {
+    console.error("Error updating follow:", error.message);
+    res.status(500).json({ success: false, message: "Server error" });
   }
 };

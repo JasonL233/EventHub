@@ -1,11 +1,9 @@
 import React from 'react'
-import { Button, Input, HStack, Box, Flex, Spacer } from "@chakra-ui/react";
+import {NativeSelect, Button, Input, HStack, Box, Flex, } from "@chakra-ui/react";
 import { CiSearch } from "react-icons/ci";
 import { useState } from 'react';
 import { Link } from "react-router-dom";
 import { useEventStore } from '../../store/event'
-import NotificationBell from './NotificationBell';
-import { useUserStore } from '../../store/user';
 
 const Navbar = () => {
   const { 
@@ -16,7 +14,6 @@ const Navbar = () => {
     setIsCombinedSearching 
   } = useEventStore();
 
-  const currUser = useUserStore((state) => state.curr_user);
 
   const handleSearch = async (query) => {
     const searchQuery = query || searchText;
@@ -39,11 +36,8 @@ const Navbar = () => {
   }
 
   return (
-    <Flex w="full" align="center" px={4} py={2} bg="white">
-      <Box />
-      <Spacer />
-      <Spacer />
-      <HStack spacing={2}>
+    <Flex align="center" justify="center" alignItems="center">
+      <HStack w="80%" align="center" justify="center">
           <Input 
             w="700px" 
             h="50px" 
@@ -62,16 +56,6 @@ const Navbar = () => {
             </Button>
           </Link>
       </HStack>
-      
-      <Spacer />
-      
-      {currUser && (<Box>
-        {currUser ? (
-          <NotificationBell userId={currUser._id} />
-        ) : (
-          <NotificationBell userId="" />
-        )}
-      </Box>)}
     </Flex>
   )
 }

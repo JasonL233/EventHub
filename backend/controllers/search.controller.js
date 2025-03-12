@@ -75,34 +75,52 @@ export const getSearchEventsByAll = async (req, res) => {
       username: {$exists: true, $ne: null, $regex: searchQuery, $options: 'i'}
     });
 
-    let usernameEvents = [];
-
-    for (let user of usernames) {
-      let matchedEvents = await Event.find({
-        publisherId: user._id
-      }).populate("publisherId", "-password");
-      usernameEvents.push(...matchedEvents);
-    }
+    const publisherIds = usernames.map(user => user._id);
+    const usernameEvents = await Event.find({
+      publisherId: {$in: publisherIds }
+    }).populate("publisherId", "-password");
 
     // Find events by tag
     const tagEvents = await Event.find({
-      tags : { $in: [new RegExp(searchQuery, 'i')] }
+      tags: { $in: [new RegExp(searchQuery, 'i')] }
     }).populate("publisherId", "-password");
 
-    const combinedEvents = [
-      ...titleEvents,
-      ...usernameEvents,
-      ...tagEvents,
-    ];
+    const eventMap = new Map();
 
-    const uniqueEvents = Array.from(new Map(
-      combinedEvents.map((event) => [event._id, event])).values()
-    );
+    // Helper function to add events to map
+    const addToMap = (events, source) => {
+      events.forEach(event => {
+        if (!eventMap.has(event._id.toString())) {
+          eventMap.set(event._id.toString(), {
+            ...event.toObject(),
+            matchedBy: [source]
+          });
+        } else {
+          const existing = eventMap.get(event._id.toString());
+          if (!existing.matchedBy.includes(source)) {
+            existing.matchedBy.push(source);
+          }
+        }
+      });
+    };
 
-    res.status(200).json({success: true, data: uniqueEvents,message: "Combined search Success"});
+    addToMap(titleEvents, "title");
+    addToMap(titleEvents, "username");
+    addToMap(titleEvents, "tag");
+
+    const uniqueEvents = Array.from(eventMap.values());
+
+    res.status(200).json({
+      success: true, 
+      data: uniqueEvents,
+      message: "Combined search Success"
+    });
   } catch (error) {
     console.error("Error in combined searching: ", error.message);
-    res.status(500).json({success: false, message: "Sever error from combined seraching"});
+    res.status(500).json({
+      success: false, 
+      message: "Server error from combined searching"
+    });
   }
 
 };

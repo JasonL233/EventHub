@@ -54,6 +54,31 @@ const ProfilePage = () => {
   const UpdateUsername = async() => {
     if(!isMyProfile) return;  // Prevent updating other users
 
+    try{
+      const res = await fetch("/api/users");
+      const data = await res.json();
+      if(data.success && data.data){
+        const usernameExists = data.data.some(
+          (u) => 
+            u.username.toLowerCase() === newUsername.toLowerCase() && u._id !== profileUser._id
+        );
+        if(usernameExists){
+          Toaster.create({
+            title: "Error",
+            description: "Username already exists",
+            type: "error",
+            duration: 1500,
+            isCloseable: true,
+
+          });
+          return;
+        }
+      }
+    }catch(error){
+      console.error("Error checking username uniqueness:", error);
+      return;
+    }
+
     const updateUserInfo = await updateUserProfile(profileUser._id, newUsername, profileUser.profileImage);
     if(updateUserInfo){
       setProfileUser((prev) => ({

@@ -1,5 +1,7 @@
 import mongoose from "mongoose";
 import Event from "../models/event.model.js";
+import User from "../models/user.model.js";
+import Notification from "../models/notification.model.js";
 
 // Get single specific event
 export const getEvent = async (req, res) => {
@@ -139,6 +141,18 @@ export const likeEvent = async (req, res) => {
         .json({ success: false, message: "Event not found" });
     }
 
+    if (action === "like" && user_id.toString() !== updatedEvent.publisherId.toString()) {
+      const likerUser = await User.findById(user_id);
+      const likerName = likerUser ? likerUser.username : "Someone";
+      await Notification.create({
+        recipient: updatedEvent.publisherId,
+        type: "like",
+        message: `${likerName} liked your post "${updatedEvent.title}."`,
+        sender: user_id,
+        post: updatedEvent._id,
+      });
+    }
+
     res.status(200).json({ success: true, data: updatedEvent });
   } catch (error) {
     console.error("Error updating likes:", error.message);
@@ -170,6 +184,19 @@ export const addComment = async (req, res) => {
     event.comments.push({ userId: user_id, comment: comment });
     await event.save();
 
+    if (user_id.toString() !== event.publisherId.toString()) {
+      const commenterUser = await User.findById(user_id);
+      const commenterName = commenterUser ? commenterUser.username : "Someone";
+
+      await Notification.create({
+        recipient: event.publisherId,
+        type: "comment",
+        message: `${commenterName} commented on your post "${event.title}."`,
+        sender: user_id,
+        post: event._id,
+      });
+    }
+
     const updatedEvent = await Event.findById(id);
     res.status(200).json({ success: true, data: updatedEvent });
   } catch (error) {
@@ -194,9 +221,33 @@ export const replyComment = async (req, res) => {
 
   try {
     const event = await Event.findById(id);
+
+    if (!event) {
+      return res.status(404).json({ success: false, message: "Event not found" });
+    }
+
+    const repliedComment = event.comments.find(c => c._id.toString() === reply_to);
+    if (!repliedComment) {
+      return res.status(404).json({ success: false, message: "Comment not found" });
+    }
+
     const update = { userId: user_id, comment: comment, replyTo: reply_to };
     event.comments.push(update);
     await event.save();
+
+    if (user_id.toString() !== repliedComment.userId.toString()) {
+      const replierUser = await User.findById(user_id);
+      const replierName = replierUser ? replierUser.username : "Someone";
+
+      await Notification.create({
+        recipient: repliedComment.userId,
+        type: "reply",
+        message: `${replierName} replied to your comment on "${repliedComment.comment}": "${comment}"`,
+        sender: user_id,
+        post: event._id,
+      });
+    }
+
     const updatedEvent = await Event.findById(id);
     if (!updateEvent) {
       return res

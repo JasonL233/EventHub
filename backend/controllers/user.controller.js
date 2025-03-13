@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import User from "../models/user.model.js";
+import Notification from "../models/notification.model.js";
 
 export const updateUserProfile = async (req, res) => {
   const { id } = req.params;
@@ -215,6 +216,17 @@ export const updateFollow = async (req, res) => {
 
     updateCurrent = { $addToSet: { following: targetId } };
     updateTarget = { $addToSet: { followers: user_id } };
+
+    if (user_id.toString() !== targetId.toString()) {
+      const currentUser = await User.findById(user_id);
+      const currentUserName = currentUser ? currentUser.username : "Someone";
+      await Notification.create({
+        recipient: targetId,
+        type: "follow",
+        message: `${currentUserName} started following you.`,
+        sender: user_id,
+      });
+    }
 
   } else if (action === "unfollow") {
 

@@ -100,7 +100,7 @@ export const updateEvent = async (req, res) => {
   }
 };
 
-export const deleteEvent = async (req, res) => {
+export const deletePost = async (req, res) => {
   const { id } = req.params;
 
   try {

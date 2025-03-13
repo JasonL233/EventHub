@@ -22,6 +22,8 @@ app.use("/api/events", eventRoutes);
 
 app.use("/api/search", searchRoutes);
 
+app.use("/api/events", eventRoutes);
+
 app.get("/", (req, res) => {
   res.send("Server is ready");
 });

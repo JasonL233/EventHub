@@ -183,5 +183,23 @@ export const useEventStore = create((set) => ({
 
   setSearchText: async (text) => {
     set({searchText: text});
-  }
+  },
+
+    // Delete Post
+    deletePost: async(id) => {
+      const res = await fetch(`/api/events/${id}`, {
+        method: "DELETE",
+      });
+      const data = await res.json();
+      if(!data.success){
+        console.error("Faild to delete post: ", data.message);
+        return { success: false, meaasge: data.message };
+      }
+  
+      // Update events list, filiter deleted events
+      set((state) => ({
+        events: state.events.filter((event) => event._id !== id),
+      }));
+      return { success: true, message: data.message };
+    },
 }));

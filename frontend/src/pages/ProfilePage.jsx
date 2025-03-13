@@ -277,12 +277,34 @@ const ProfilePage = () => {
               // Extract first sentence of description
               const truncatedDescription = event.description.split(/[.\n]/)[0] + "...";
               
+              const handleDeletePost = async(eventId) => {
+                const result = await useEventStore.getState().deletePost(eventId);
+                if(result.success){
+                  fetchEvents();
+                }else{
+                  console.error("Delete Failed: ", result.message);
+                }
+              };
+
               return (
                 <GridItem key={event._id} {...postContainerStyle} onClick={() => navigate(`/post/${event._id}`)}>
                   <VStack align="start">
                     <Heading {...postTitleStyle}>{event.title}</Heading>
                     <Text {...postTextStyle}>{truncatedDescription}</Text>
                     <Text fontWeight="bold" color="black">Likes: {event.likes}</Text>
+                    {/* Delete Button */}
+                    {isMyProfile && (
+                      <Button
+                        colorScheme="res"
+                        size="sm"
+                        onClick={(e) => {
+                          e.stopPropagation();   // Prevent GridItem pick event
+                          handleDeletePost(event._id);
+                        }}
+                      >
+                        Delete
+                      </Button>
+                    )}
                   </VStack>
                 </GridItem>
               );

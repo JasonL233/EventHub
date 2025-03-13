@@ -105,8 +105,8 @@ export const getSearchEventsByAll = async (req, res) => {
     };
 
     addToMap(titleEvents, "title");
-    addToMap(titleEvents, "username");
-    addToMap(titleEvents, "tag");
+    addToMap(usernameEvents, "username");
+    addToMap(tagEvents, "tag");
 
     const uniqueEvents = Array.from(eventMap.values());
 

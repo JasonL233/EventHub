@@ -22,7 +22,7 @@ Event Hub is a **MERN Stack** full stack web application that aims to provide a 
     * After clicking an event card, users can post comments to this post if user has logged in.
         * If the user is not logged in, this post page displays a button that direct users to the login window.
     * Users can like an event on both the main/discover page and the post page.
-    * On post page, user can click on a comment to view the commenter's profile.
+    * On post page, users can click on a comment to view the commenter's profile and select follow or unfollow according to their determination.
 * Search for posts
     * Users can search posts based on the post's title, the publisher's username, and an event tag.
         * On the main/discover page, only posts that match the search criteria will be displayed.
@@ -34,6 +34,7 @@ Event Hub is a **MERN Stack** full stack web application that aims to provide a 
 * Profile page
     * Instead of displaying number of followings, it will display number of followers.
     * Instead of displaying liked posts, it will display posts that created by the event organizer.
+    * Poster can delete their post.
 * Create a post
     * Event organizers can create a post by clicking the "Post" button.
         * They can add an image or video, event title, description, and tags.

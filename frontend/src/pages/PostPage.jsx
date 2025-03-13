@@ -48,10 +48,9 @@ const PostPage = () => {
           <video
             src={event.mediaUrl}
             autoPlay
-            muted
             loop
             controls
-            width="100%"
+            width="70%"
             maxH={"800px"}
             style={{ objectFit: "conatin", border: "black", borderColor: "black" }}
           />
@@ -62,7 +61,7 @@ const PostPage = () => {
             border="black"
             borderColor="black"
             rounded={"lg"}
-            w="100%"
+            w="70%"
             maxH={"800px"}
           />
         )}

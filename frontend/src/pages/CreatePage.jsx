@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Box, Button, Container, Flex, Input, Textarea, Image, Text, Heading } from "@chakra-ui/react";
 import { useEventStore } from "../store/event";
 import { toaster } from "../components/ui/toaster";
@@ -7,6 +7,22 @@ import { useNavigate } from "react-router-dom";
 
 const CreatePage = () => {
   const currUser = useUserStore((state) => state.curr_user);
+  const containerRef = useRef(null);
+  const [width, setWidth] = useState(0);
+
+  useEffect(() => {
+    const observer = new ResizeObserver((entries) => {
+      for (let entry of entries) {
+        setWidth(entry.contentRect.width);
+      }
+    });
+
+    if (containerRef.current) {
+      observer.observe(containerRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, []);
 
   // Form fields
   const [newEvent, setNewEvent] = useState({
@@ -122,20 +138,24 @@ const CreatePage = () => {
             border="2px dashed gray.400"
             borderRadius="md"
             width="30%"
-            height="180px"
+            height="100%"
             cursor="pointer"
             _hover={{ borderColor: "gray.600" }}
             onClick={handleMediaUpload}
             transition="0.2s"
             bg="gray.100"
+            ref={containerRef}
           >
             {newEvent.mediaUrl ? (
               newEvent.eventType === "video" ? (
-                <video autoPlay muted loop width="100%" height="100%" controls>
-                  <source src={newEvent.mediaUrl} type="video/mp4" />
+                <iframe
+                src={newEvent.mediaUrl}
+                width={'100%'}
+                height={width*0.5625}
+                style={{ objectFit: "cover", border: "black", borderColor: "black"}}
+                >
                   Your browser does not support video playback.
-                </video>
-
+                </iframe>
               ) : (
                 <Image
                   src={newEvent.mediaUrl}

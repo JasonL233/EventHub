@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useParams } from "react-router-dom";
 import {VStack, Text, Container, Heading, Box, Image, HStack, Spacer, Button} from "@chakra-ui/react";
 import {useEventStore} from "../store/event.js";
@@ -21,10 +21,13 @@ const PostPage = () => {
   // Loading state
   const [loading, setLoading] = useState(true);
 
+  const containerRef = useRef(null);
+  const [width, setWidth] = useState(0);
 
   // fetch event data
   useEffect(() => {
     fetchEvent(id).then(setLoading(false));
+    
   }, [curUser, fetchEvent]);
 
   useEffect(() => {
@@ -34,25 +37,39 @@ const PostPage = () => {
     };
   }, []);
 
+  useEffect(() => {
+    const observer = new ResizeObserver((entries) => {
+      for (let entry of entries) {
+        setWidth(entry.contentRect.width);
+      }
+    });
+
+    if (containerRef.current) {
+      observer.observe(containerRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, [event]);
+
   if (loading) return ;
 
   return (
     <Container maxW = 'container.x1' py = {12}>
-      <VStack>
+      <VStack ref={containerRef}>
         <Publisher event={event}/>
         <Heading as = {"h1"} color = {"black"} size = {"4xl"} textAlign = {"center"} mb = {8}>
           {event.title}
 				</Heading>
         <AutoLikeButton event = {event} initial={false}/>
         {event.eventType === "video" ? (
-          <video
-            src={event.mediaUrl}
-            autoPlay
-            loop
-            controls
-            width="70%"
-            maxH={"800px"}
-            style={{ objectFit: "conatin", border: "black", borderColor: "black" }}
+          <iframe
+          src={event.mediaUrl}
+          autoPlay
+          loop
+          controls
+          width={'100%'}
+          height={width*0.5625}
+          style={{ objectFit: "cover", border: "black", borderColor: "black"}}
           />
         ) : (
           <Image

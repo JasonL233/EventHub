@@ -1,13 +1,32 @@
-import React, { useState, useEffect } from 'react'
-import { Image, Box, Icon } from '@chakra-ui/react';
+import React, { useState, useEffect, useRef } from 'react'
+import { Image, Box, Icon, Button } from '@chakra-ui/react';
 import { Link } from "react-router-dom";
 import { FaRegCirclePlay } from "react-icons/fa6";
 
 const EventButton = ( {id, mediaSrc, eventTitle, isImage} ) => {
     const [image, setImage] = useState(mediaSrc);
+    const containerRef = useRef(null);
+    const [width, setWidth] = useState(0);
+    const iframeRef = useRef(null);
+
     useEffect(() => {
         setImage(mediaSrc);
     }, [mediaSrc]);
+
+    useEffect(() => {
+        const observer = new ResizeObserver((entries) => {
+          for (let entry of entries) {
+            setWidth(entry.contentRect.width);
+          }
+        });
+    
+        if (containerRef.current) {
+          observer.observe(containerRef.current);
+        }
+        window.handleClick = handleClick;
+
+        return () => observer.disconnect();
+      }, [mediaSrc]);
 
     const handleClick = () => {
         
@@ -30,15 +49,15 @@ const EventButton = ( {id, mediaSrc, eventTitle, isImage} ) => {
                 _hover={{filter: "brightness(80%)",}}
                 />
             ) : (
-                <Box position="relative" >
-                    <video 
-                    src={mediaSrc} 
+                <Box position="relative" ref={containerRef} onClick={handleClick}>
+                    <iframe
+                    ref={iframeRef}
+                    src={mediaSrc}
                     alt={eventTitle} 
-                    width="100%" 
-                    height="auto" 
-                    style={{ borderRadius: "1rem", objectFit: "cover" }}
+                    width={'100%'}
+                    height={width*0.5625}
+                    style={{  borderRadius: "1rem", objectFit: "cover", pointerEvents: 'none'}}
                     />
-
                     {/* Play Icon */}
                     <Box
                         position="absolute"

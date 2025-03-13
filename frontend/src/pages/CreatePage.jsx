@@ -138,7 +138,7 @@ const CreatePage = () => {
             border="2px dashed gray.400"
             borderRadius="md"
             width="30%"
-            height="100%"
+            minH={"180px"}
             cursor="pointer"
             _hover={{ borderColor: "gray.600" }}
             onClick={handleMediaUpload}
